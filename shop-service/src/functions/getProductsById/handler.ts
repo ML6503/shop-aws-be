@@ -5,7 +5,7 @@ import ProductService from 'src/service/productService';
 
 import schema from './schema';
 
-const getProductById: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
+const getProductsById: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
   const { productId } = event.pathParameters;
   const productService = new ProductService;
   const product = await productService.getProductById(productId);
@@ -17,4 +17,4 @@ const getProductById: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async 
   });
 };
 
-export const main = middyfy(getProductById);
+export const main = middyfy(getProductsById);

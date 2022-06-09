@@ -12,7 +12,7 @@ import schema from './schema';
 //   });
 // };
 
-const getProductsList: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async () => {
+const getProductsList = async () => {
   const productService = new ProductService;
   const allProducts = await productService.getAllProducts();
 
