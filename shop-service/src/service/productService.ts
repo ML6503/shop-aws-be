@@ -32,7 +32,8 @@ export default class ProductService {
     async getProductById(productId: string): Promise<IProduct> {
         
         await sleep(1000);
-        return this.productDB[productId];
+        const singleProduct =  this.productDB.filter(p => p.productId === productId)[0];
+        return singleProduct;
     }
 
     async addProduct(product: IProduct): Promise<IProduct[]> {
