@@ -1,4 +1,7 @@
-import IProduct from "src/models/Product";
+import { v4 as uuidv4 } from 'uuid';
+import { IProduct, INewProduct } from "src/models/Product";
+
+// !!!!!!!!TODO add UUID for products and in addProduct method!!!!!!!!
 
 // to mock time to wait reply from DB
 const sleep = (ms: number) => {
@@ -8,13 +11,13 @@ const sleep = (ms: number) => {
 export default class ProductService {
     private productDB: IProduct[] = [
         {
-            productId: '1',
+            productId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
             title: 'Dagger',
             description: 'Cobra movie replica',
             price: 123
         },
         {
-            productId: '2',
+            productId: '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed',
             title: 'Knife Damascus',
             description: 'Darken damscacus steel',
             price: 230 
@@ -36,10 +39,12 @@ export default class ProductService {
         return singleProduct;
     }
 
-    async addProduct(product: IProduct): Promise<IProduct[]> {
+    async addProduct(product: INewProduct): Promise<IProduct[]> {
         
         // await sleep(1000);
-        this.productDB.push(product);
+        const newProduct : IProduct = {productId: uuidv4(), ...product};
+
+        this.productDB.push(newProduct);
         const newProductList = await this.getAllProducts();
         return newProductList;
     }
