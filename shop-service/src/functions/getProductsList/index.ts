@@ -6,8 +6,7 @@ export default {
     {
       http: {
         method: 'get',
-        path: 'products',
-        corse: true
+        path: 'products'
       },
     },
   ],

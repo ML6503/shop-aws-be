@@ -6,15 +6,23 @@ import ProductService from 'src/service/productService';
 import schema from './schema';
 
 const getProductsById: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
-  const { productId } = event.pathParameters;
-  const productService = new ProductService;
-  const product = await productService.getProductById(productId);
+  let product = null;
   console.log('event from getProductById: ', event);
 
-  return formatJSONResponse({
-    product: product,
-    
-  });
+  if (event.pathParameters && event.pathParameters.productId) {
+    const { productId } = event.pathParameters;
+    const productService = new ProductService;
+    product = await productService.getProductById(productId);    
+  }
+
+  return product
+    ? formatJSONResponse({
+        product: product,    
+      })
+    : {
+      statusCode: 404,
+      body: JSON.stringify({ error: 'Product not found' })
+    };
 };
 
 export const main = middyfy(getProductsById);

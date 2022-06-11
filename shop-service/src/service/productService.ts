@@ -1,8 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { IProduct, INewProduct } from "src/models/Product";
 
-// !!!!!!!!TODO add UUID for products and in addProduct method!!!!!!!!
-
 // to mock time to wait reply from DB
 const sleep = (ms: number) => {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -12,16 +10,40 @@ export default class ProductService {
     private productDB: IProduct[] = [
         {
             productId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
-            title: 'Dagger',
+            title: 'Custom knife',
             description: 'Cobra movie replica',
             price: 123
         },
         {
             productId: '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed',
             title: 'Knife Damascus',
-            description: 'Darken damscacus steel',
+            description: 'Damscus steel VG10',
             price: 230 
-        }
+        },
+        {
+            productId: '1b9d6bcd-bafd-4b2d-9b5d-ab8dfbbd4bed',
+            title: 'Hunting Knife',
+            description: 'Knife made of steel N690',
+            price: 80 
+        },
+        {
+            productId: '1b9d6bcd-bbfd-4b2d-9b8d-ab8dfbbd4bed',
+            title: 'War Axe',
+            description: 'Double sided axe',
+            price: 310 
+        },
+        {
+            productId: '1b9d6bcd-bbfd-4b2d-9b8d-ab8dfbbd4bex',
+            title: 'Tanto knife',
+            description: 'Japanese style knife',
+            price: 500 
+        },
+        {
+            productId: '5e9d6bcd-bbfd-4b2d-9b8d-ab8dfbbd4bex',
+            title: 'Sword cane',
+            description: 'Woden cane with hidden N690 steel blade',
+            price: 520 
+        },
     ];
 
     constructor() {}

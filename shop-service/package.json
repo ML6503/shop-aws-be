@@ -6,14 +6,16 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "compile": "tsc",
-    "offline": "sls offline --noPrependStageInUrl"
+    "offline": "sls offline --noPrependStageInUrl",
+    "log": "serverless logs -f <functionName>"
   },
   "engines": {
     "node": ">=14.15.0"
   },
   "dependencies": {
     "@middy/core": "^2.5.3",
-    "@middy/http-json-body-parser": "^2.5.3"
+    "@middy/http-json-body-parser": "^2.5.3",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@serverless/typescript": "^3.0.0",

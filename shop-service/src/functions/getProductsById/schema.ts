@@ -6,9 +6,19 @@
 //   required: ['name']
 // } as const;
 
+// export default {
+//   type: "object",
+//   pathParameters: {
+//     productId: { type: 'string' }
+//   },
+// } as const;
+
 export default {
   type: "object",
-  pathParameters: {
-    productId: { type: 'string' }
-  },
+   properties:{
+      message: {
+         type: "string"
+      }
+   }
+
 } as const;
