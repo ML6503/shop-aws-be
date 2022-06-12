@@ -7,6 +7,7 @@ const serverlessConfiguration: AWS = {
   service: 'shop-service',
   frameworkVersion: '3',
   plugins: [
+    'serverless-auto-swagger',
     'serverless-esbuild',
     // 'serverless-webpack',
     'serverless-offline',
@@ -31,6 +32,9 @@ const serverlessConfiguration: AWS = {
   functions: { getProductsList, getProductsById },  
   package: { individually: true },
   custom: {
+    autoswagger: {
+      typefiles: ['./src/types/product.d.ts']
+    },
     esbuild: {
       bundle: true,
       minify: false,

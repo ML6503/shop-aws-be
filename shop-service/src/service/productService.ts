@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { IProduct, INewProduct } from "src/models/Product";
+import { IProduct, INewProduct } from "src/types/product";
 
 // to mock time to wait reply from DB
 const sleep = (ms: number) => {
@@ -78,9 +78,8 @@ export default class ProductService {
         return newProductList;
     }
 
-    async deleteProductById(productId: string): Promise<IProduct[]> {
-        
-        // await sleep(1000);
+    async deleteProductById(productId: string): Promise<IProduct[]> {        
+     
         this.productDB.filter(p => p.id !== productId);
         const newProductList = await this.getAllProducts();
         return newProductList;
@@ -96,7 +95,7 @@ export default class ProductService {
         } if (price) {
             updatedProduct.price = price;
         }
-        // await sleep(1000);
+        
         this.productDB.map(p => p.id === productId ? p = updatedProduct : p);
         const newProductList = await this.getAllProducts();
         return newProductList;

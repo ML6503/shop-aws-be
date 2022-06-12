@@ -7,3 +7,14 @@ jspm_packages
 
 # esbuild directories
 .esbuild
+
+# Webpack directories
+.webpack
+
+build
+
+
+# Compiled Code
+dist
+
+tes

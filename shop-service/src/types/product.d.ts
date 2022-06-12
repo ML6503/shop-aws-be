@@ -12,3 +12,7 @@ export interface INewProduct {
     price: number,
     count: number
 }
+
+export interface IProducts {
+    products: IProduct[]
+}

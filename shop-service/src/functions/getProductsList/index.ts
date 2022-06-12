@@ -6,7 +6,16 @@ export default {
     {
       http: {
         method: 'get',
-        path: 'products'
+        path: 'products',
+        responses: {
+          200: {
+            description: 'all products received successfully',
+            bodyType: 'IProducts'
+          },
+          400: {
+            description: 'Bad request. Product not found'
+          }
+        }
       },
     },
   ],
