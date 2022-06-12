@@ -1,12 +1,14 @@
 export  interface IProduct {
-    productId: string;
+    id: string;
     title: string,
     description: string,
-    price: number
+    price: number,
+    count: number
 }
 
 export interface INewProduct {
     title: string,
     description: string,
-    price: number
+    price: number,
+    count: number
 }
