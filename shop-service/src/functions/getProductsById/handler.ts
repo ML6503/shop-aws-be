@@ -8,10 +8,10 @@ import schema from './schema';
 export const getProductsById: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
   try {
     let product = null;
-    console.log('event from getProductById: ', event);
+    console.log('event from getProductById: ', event.path);
 
     if (event.pathParameters && event.pathParameters.productId) {
-      const { productId } = event.pathParameters;
+      const { productId } = event?.pathParameters;
       const productService = new ProductService;
       product = await productService.getProductById(productId);    
     }

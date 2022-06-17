@@ -7,7 +7,8 @@
     "test": "jest",
     "compile": "tsc",
     "offline": "sls offline --noPrependStageInUrl",
-    "log": "serverless logs -f <functionName>"
+    "log": "serverless logs -f <functionName>",
+    "invoke:getProductsList": "sls invoke local --function getProductsList"    
   },
   "engines": {
     "node": ">=14.15.0"
