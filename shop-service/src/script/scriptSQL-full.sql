@@ -2,7 +2,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 create table product (
 id uuid not null DEFAULT uuid_generate_v4 () PRIMARY KEY,
-title text not null,
+title text not null unique,
 description text,
 price integer
 );
@@ -47,15 +47,15 @@ insert into product (title, description, price) values ('Tanto knife', 'Japanese
 
 insert into product (title, description, price) values ('Sword cane', 'Woden cane with hidden N690 steel blade', 520 );
 
-/*stock */
-insert into stocks (product_id, count) values ('cfe11cdb-3db5-42f0-95ad-7f06601672a0', 1);
+/*stocks*/
+insert into stocks (product_id, count) values
+((select id from product where title = 'Custom knife'), 1),
+((select id from product where title = 'Knife Damascus'), 3),
+((select id from product where title = 'Hunting Knife'), 10),
+((select id from product where title = 'War Axe'), 1),
+((select id from product where title = 'Tanto knife'), 2),
+((select id from product where title = 'Sword cane'), 1);
 
-insert into stocks (product_id, count) values ('74697980-eeed-4f96-9adf-69d89fdb39ec', 3);
-
-insert into stocks (product_id, count) values ('d4a4243b-6454-4e75-bbfc-c658b3b45c1e', 10);
-
-insert into stocks (product_id, count) values ('cb6892fa-df75-4138-8909-8420321ee311', 1);
-
-insert into stocks (product_id, count) values ('7ca667b2-548f-4f23-8661-22e47f4bbc5f', 2);
-
-insert into stocks (product_id, count) values ('02219ff1-5675-4bb7-8af3-9077bf338c29', 1);
+/* join product with stocks*/
+select id, title, description, price, count from product
+inner join stocks  on stocks.product_id = product.id order by stocks.count;

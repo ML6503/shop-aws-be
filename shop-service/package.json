@@ -8,7 +8,7 @@
     "compile": "tsc",
     "offline": "sls offline --noPrependStageInUrl",
     "log": "serverless logs -f <functionName>",
-    "invoke:getProductsList": "sls invoke local --function getProductsList"    
+    "invoke:getProductsList": "sls invoke local --function getProductsList"
   },
   "engines": {
     "node": ">=14.15.0"
@@ -16,6 +16,7 @@
   "dependencies": {
     "@middy/core": "^2.5.3",
     "@middy/http-json-body-parser": "^2.5.3",
+    "pg": "^8.7.3",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
