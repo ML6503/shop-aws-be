@@ -1,4 +1,4 @@
-import type { ValidatedEventAPIGatewayProxyEvent } from '@libs/api-gateway';
+import { errorNoProductResponse, errorServerResponse, ValidatedEventAPIGatewayProxyEvent } from '@libs/api-gateway';
 import { formatJSONResponse } from '@libs/api-gateway';
 import { middyfy } from '@libs/lambda';
 import ProductService from 'src/service/productService';
@@ -8,8 +8,7 @@ import schema from './schema';
 export const getProductsById: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
   try {
     let product = null;
-    console.log('event from getProductById: ', event.path);
-
+  
     if (event.pathParameters && event.pathParameters.productId) {
       const { productId } = event?.pathParameters;
       const productService = new ProductService;
@@ -20,13 +19,11 @@ export const getProductsById: ValidatedEventAPIGatewayProxyEvent<typeof schema> 
       ? formatJSONResponse({
           product: product,    
         })
-      : {
-        statusCode: 404,
-        body: JSON.stringify({ error: 'Product not found' })
-      };
+      : errorNoProductResponse;
 
   } catch (e) {
     console.error(e);
+    return errorServerResponse;
   }
 };
 

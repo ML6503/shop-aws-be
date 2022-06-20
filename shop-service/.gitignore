@@ -17,4 +17,5 @@ build
 # Compiled Code
 dist
 
-tes
+# Tests
+tests

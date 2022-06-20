@@ -1,13 +1,13 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-create table product (
+create table IF NOT EXISTS product (
 id uuid not null DEFAULT uuid_generate_v4 () PRIMARY KEY,
 title text not null unique,
 description text,
 price integer
 );
 
-create table stocks (
+create table IF NOT EXISTS stocks (
 product_id uuid references product(id),
 count integer
 );

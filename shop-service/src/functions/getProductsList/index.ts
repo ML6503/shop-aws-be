@@ -10,7 +10,7 @@ export default {
         responses: {
           200: {
             description: 'all products received successfully',
-            bodyType: 'IProducts'
+            bodyType: typeof(Array),
           },
           400: {
             description: 'Bad request. Product not found'

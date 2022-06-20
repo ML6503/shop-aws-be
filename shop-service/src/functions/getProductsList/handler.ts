@@ -1,4 +1,4 @@
-import { formatJSONResponse } from '@libs/api-gateway';
+import { errorServerResponse, formatJSONResponse } from '@libs/api-gateway';
 import { middyfy } from '@libs/lambda';
 import ProductService from 'src/service/productService';
 
@@ -13,6 +13,7 @@ export const getProductsList = async () => {
     });
  } catch (e) {
     console.error(e);
+    return errorServerResponse;
  }
 }
 

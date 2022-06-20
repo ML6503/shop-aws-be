@@ -1,7 +1,8 @@
 import type { AWS } from '@serverless/typescript';
-
+import 'dotenv/config';
 import getProductsList from '@functions/getProductsList';
 import getProductsById from '@functions/getProductsById';
+import addProductsById from '@functions/addProductsById';
 
 const serverlessConfiguration: AWS = {
   service: 'shop-service',
@@ -9,16 +10,16 @@ const serverlessConfiguration: AWS = {
   plugins: [
     'serverless-auto-swagger',
     'serverless-esbuild',
-    // 'serverless-webpack',
     'serverless-offline',
   ],
+  useDotenv: true,
   provider: {
     name: 'aws',
     runtime: 'nodejs14.x',
     region: 'eu-west-1',
     httpApi: {
       cors: true
-    },
+    },    
     apiGateway: {
       minimumCompressionSize: 1024,
       shouldStartNameWithService: true,
@@ -26,10 +27,15 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
+      PG_HOST: process.env.PG_HOST,
+      PG_PORT: process.env.PG_PORT,
+      PG_DATABASE: process.env.PG_DATABASE,
+      PG_USERNAME: process.env.PG_USERNAME,
+      PG_PASSWORD: process.env.PG_PASSWORD,
     },
   },
   // import the function via paths
-  functions: { getProductsList, getProductsById },  
+  functions: { getProductsList, getProductsById, addProductsById },  
   package: { individually: true },
   custom: {
     autoswagger: {
