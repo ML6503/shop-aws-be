@@ -15,7 +15,7 @@ const SELECT_ALL_PRODUCTS_JOIN_STOCK = `SELECT p.id, s.count, p.price, p.title, 
 const DELETE_ONE_PRODUCT_BY_ID = `DELETE FROM product p
                                   WHERE p.id = $1
                                   AND * IN stocks s
-                                  WHERE s.product_id = $1)`;
+                                  WHERE s.product_id = $1`;
 
 const UPDATE_PRODUCT_TITLE = `UPDATE product SET title = $2 WHERE id = $1`;
 
@@ -94,50 +94,7 @@ const updateProductStock = (productId: string, count: number) => {
 };
 
 export default class ProductService {
-    // private productDB: IProduct[] = [
-    //     {
-    //         id: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
-    //         title: 'Custom knife',
-    //         description: 'Cobra movie replica',
-    //         price: 123,
-    //         count: 1
-    //     },
-    //     {
-    //         id: '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed',
-    //         title: 'Knife Damascus',
-    //         description: 'Damscus steel VG10',
-    //         price: 230,
-    //         count: 3 
-    //     },
-    //     {
-    //         id: '1b9d6bcd-bafd-4b2d-9b5d-ab8dfbbd4bed',
-    //         title: 'Hunting Knife',
-    //         description: 'Knife made of steel N690',
-    //         price: 80,
-    //         count: 10 
-    //     },
-    //     {
-    //         id: '1b9d6bcd-bbfd-4b2d-9b8d-ab8dfbbd4bed',
-    //         title: 'War Axe',
-    //         description: 'Double sided axe',
-    //         price: 310,
-    //         count: 1
-    //     },
-    //     {
-    //         id: '1b9d6bcd-bbfd-4b2d-9b8d-ab8dfbbd4bex',
-    //         title: 'Tanto knife',
-    //         description: 'Japanese style knife',
-    //         price: 500,
-    //         count: 2
-    //     },
-    //     {
-    //         id: '5e9d6bcd-bbfd-4b2d-9b8d-ab8dfbbd4bex',
-    //         title: 'Sword cane',
-    //         description: 'Woden cane with hidden N690 steel blade',
-    //         price: 520,
-    //         count: 1
-    //     },
-    // ];
+
    private readonly client: PGClient;
    public products: Array<IProduct> | [];
 
@@ -189,8 +146,10 @@ export default class ProductService {
             .query(getOneProductStock(productId))
             .then(res => singleProductStock = res.rows[0])
             .catch(e => console.error(e.stack));
-            console.log('product ', {...singleProduct, count: singleProductStock } );
+            console.log('product ', {...singleProduct, count: singleProductStock });
+
             return {...singleProduct, count: singleProductStock };
+
         } catch (err) {
             console.error(err);
         }
