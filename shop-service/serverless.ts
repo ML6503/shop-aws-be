@@ -4,6 +4,7 @@ import getProductsList from '@functions/getProductsList';
 import getProductsById from '@functions/getProductsById';
 import addProductsById from '@functions/addProductsById';
 
+
 const serverlessConfiguration: AWS = {
   service: 'shop-service',
   frameworkVersion: '3',
@@ -39,7 +40,7 @@ const serverlessConfiguration: AWS = {
   package: { individually: true },
   custom: {
     autoswagger: {
-      typefiles: ['./src/types/product.d.ts']
+      typefiles: ['./src/types/product.d.ts'],     
     },
     esbuild: {
       bundle: true,
@@ -51,6 +52,7 @@ const serverlessConfiguration: AWS = {
       platform: 'node',
       concurrency: 10,
     },
+  
   },
 };
 

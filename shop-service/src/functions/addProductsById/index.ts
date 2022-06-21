@@ -16,7 +16,7 @@ export default {
         responses: {
           200: {
             description: 'Product created successfully',
-            bodyType: AddProductResponse,
+            bodyType: JSON.stringify(AddProductResponse),
           },
           400: {
             description: 'Bad request.'

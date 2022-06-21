@@ -1,5 +1,6 @@
 import { Client } from 'pg';
 import { errorServerResponse } from '@libs/api-gateway';
+import { middyfy } from '@libs/lambda';
 
 const { PG_DATABASE, PG_HOST, PG_PORT, PG_USERNAME, PG_PASSWORD } = process.env;
 

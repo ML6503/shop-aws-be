@@ -1,103 +1,253 @@
-import { v4 as uuidv4 } from 'uuid';
-import { IProduct, INewProduct } from "src/types/product";
+ import { IProduct, INewProduct, IProductWzStock } from "src/types/product";
+import PGClient from './pgClient';
 
-// to mock time to wait reply from DB
-const sleep = (ms: number) => {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+const SELECT_ALL_PRODUCTS = 'SELECT * FROM product';
+const SELECT_ONE_PRODUCT_BY_ID = 'SELECT * FROM product WHERE id = $1';
+const SELECT_ONE_PRODUCT_STOCK_BY_ID = 'SELECT count FROM stocks WHERE product_id = $1';
+const INSERT_ONE_PRODUCT = 'INSERT INTO product (title, description, price) VALUES ($1, $2, $3)';
+const INSERT_ONE_PRODUCT_STOCK = 'INSERT INTO stocks (product_id, count) VALUES ($1, $2,)';
+// const SELECT_ALL_PRODUCTS_JOIN_STOCK = `SELECT *
+//                                         FROM product
+//                                         INNER JOIN stocks ON stocks.product_id = product.id order by stocks.count`;
+const SELECT_ALL_PRODUCTS_JOIN_STOCK = `SELECT p.id, s.count, p.price, p.title, p.description
+                                        FROM product p
+                                        INNER JOIN stocks s ON s.product_id = p.id order by s.count DESC`;
+const DELETE_ONE_PRODUCT_BY_ID = `DELETE FROM product p
+                                  WHERE p.id = $1
+                                  AND * IN stocks s
+                                  WHERE s.product_id = $1)`;
 
+const UPDATE_PRODUCT_TITLE = `UPDATE product SET title = $2 WHERE id = $1`;
+
+const UPDATE_PRODUCT_PRICE = `UPDATE product SET price = $2 WHERE id = $1`;
+
+const UPDATE_PRODUCT_DESCRIPTION = `UPDATE product SET description = $2 WHERE id = $1`;
+
+const UPDATE_PRODUCT_STOCK = `UPDATE stocks SET count = $2 WHERE product_id = $1`;
+
+
+const deleteProductAndStock =(productId: string) => {
+    return {
+        text: DELETE_ONE_PRODUCT_BY_ID,
+        value: [productId]
+    };
+};
+
+const getOneProduct = (productId: string) => {
+    return {
+        text: SELECT_ONE_PRODUCT_BY_ID,
+        value: [productId]
+    };
+};
+
+const getOneProductStock = (productId: string) => {
+    return {
+        text: SELECT_ONE_PRODUCT_STOCK_BY_ID,
+        value: [productId]
+    };
+};
+
+const addProduct = (product: INewProduct) => {
+
+    const { title, description, price,  } = product;
+    return {
+        text: INSERT_ONE_PRODUCT,
+        value: [ title, description, price ]
+    };
+};
+
+const addProductStock = (product: INewProduct) => {
+
+    const { title, count  } = product;
+    return {
+        text: INSERT_ONE_PRODUCT_STOCK,
+        value: [ `(select id from product where title = ${title})`, count ]
+    };
+};
+
+const updateProductTitle = (productId: string, title: string) => {
+    return {
+        text: UPDATE_PRODUCT_TITLE,
+        value: [ productId, title ]
+    };
+};
+
+const updateProductPrice = (productId: string, price: number) => {
+    return {
+        text: UPDATE_PRODUCT_PRICE,
+        value: [ productId, price ]
+    };
+};
+
+const updateProductDescr = (productId: string, description: string) => {
+    return {
+        text: UPDATE_PRODUCT_DESCRIPTION,
+        value: [ productId, description ]
+    };
+};
+
+const updateProductStock = (productId: string, count: number) => {
+    return {
+        text: UPDATE_PRODUCT_STOCK,
+        value: [ productId, count ]
+    };
+};
 
 export default class ProductService {
-    private productDB: IProduct[] = [
-        {
-            id: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
-            title: 'Custom knife',
-            description: 'Cobra movie replica',
-            price: 123,
-            count: 1
-        },
-        {
-            id: '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed',
-            title: 'Knife Damascus',
-            description: 'Damscus steel VG10',
-            price: 230,
-            count: 3 
-        },
-        {
-            id: '1b9d6bcd-bafd-4b2d-9b5d-ab8dfbbd4bed',
-            title: 'Hunting Knife',
-            description: 'Knife made of steel N690',
-            price: 80,
-            count: 10 
-        },
-        {
-            id: '1b9d6bcd-bbfd-4b2d-9b8d-ab8dfbbd4bed',
-            title: 'War Axe',
-            description: 'Double sided axe',
-            price: 310,
-            count: 1
-        },
-        {
-            id: '1b9d6bcd-bbfd-4b2d-9b8d-ab8dfbbd4bex',
-            title: 'Tanto knife',
-            description: 'Japanese style knife',
-            price: 500,
-            count: 2
-        },
-        {
-            id: '5e9d6bcd-bbfd-4b2d-9b8d-ab8dfbbd4bex',
-            title: 'Sword cane',
-            description: 'Woden cane with hidden N690 steel blade',
-            price: 520,
-            count: 1
-        },
-    ];
+    // private productDB: IProduct[] = [
+    //     {
+    //         id: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
+    //         title: 'Custom knife',
+    //         description: 'Cobra movie replica',
+    //         price: 123,
+    //         count: 1
+    //     },
+    //     {
+    //         id: '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed',
+    //         title: 'Knife Damascus',
+    //         description: 'Damscus steel VG10',
+    //         price: 230,
+    //         count: 3 
+    //     },
+    //     {
+    //         id: '1b9d6bcd-bafd-4b2d-9b5d-ab8dfbbd4bed',
+    //         title: 'Hunting Knife',
+    //         description: 'Knife made of steel N690',
+    //         price: 80,
+    //         count: 10 
+    //     },
+    //     {
+    //         id: '1b9d6bcd-bbfd-4b2d-9b8d-ab8dfbbd4bed',
+    //         title: 'War Axe',
+    //         description: 'Double sided axe',
+    //         price: 310,
+    //         count: 1
+    //     },
+    //     {
+    //         id: '1b9d6bcd-bbfd-4b2d-9b8d-ab8dfbbd4bex',
+    //         title: 'Tanto knife',
+    //         description: 'Japanese style knife',
+    //         price: 500,
+    //         count: 2
+    //     },
+    //     {
+    //         id: '5e9d6bcd-bbfd-4b2d-9b8d-ab8dfbbd4bex',
+    //         title: 'Sword cane',
+    //         description: 'Woden cane with hidden N690 steel blade',
+    //         price: 520,
+    //         count: 1
+    //     },
+    // ];
+   private readonly client: PGClient;
+   public products: Array<IProduct> | [];
 
-    constructor() {}
+    constructor() {
+        this.client = new PGClient();
+        this.products = [];
+    }
 
     async getAllProducts(): Promise<IProduct[]> {
-        
-        await sleep(1000);
-        return this.productDB;
+       try {
+        await this.client
+        .query(SELECT_ALL_PRODUCTS)
+        .then(res => this.products = res.rows)
+        .catch(e => console.error(e.stack)); 
+       
+        return this.products;
+
+       } catch (err) {
+           console.error(err);   
+        }
     }
 
-    async getProductById(productId: string): Promise<IProduct> {
-        
-        await sleep(1000);
-        const singleProduct =  this.productDB.filter(p => p.id === productId)[0];
-        return singleProduct;
+    async getAllProductsWzStock(): Promise<IProductWzStock[]> {
+        let productsWzStock: IProductWzStock[] | null;
+       try {
+        await this.client
+        .query(SELECT_ALL_PRODUCTS_JOIN_STOCK)
+        .then(res => productsWzStock = res.rows)
+        .catch(e => console.error(e.stack)); 
+       
+       return productsWzStock;
+       } catch (err) {
+           console.log(err);
+       }
     }
 
-    async addProduct(product: INewProduct): Promise<IProduct[]> {
-        
-        // await sleep(1000);
-        const newProduct : IProduct = {id: uuidv4(), ...product};
+    async getProductById(productId: string): Promise<IProductWzStock> {
+        let singleProduct: IProduct | null;
+        let singleProductStock: number;
+        // let singleProductWzStock: IProductWzStock | null;
 
-        this.productDB.push(newProduct);
-        const newProductList = await this.getAllProducts();
-        return newProductList;
+        try {        
+            await this.client
+            .query(getOneProduct(productId))
+            .then(res => singleProduct = res.rows[0])
+            .catch(e => console.error(e.stack));
+            
+            await this.client
+            .query(getOneProductStock(productId))
+            .then(res => singleProductStock = res.rows[0])
+            .catch(e => console.error(e.stack));
+            console.log('product ', {...singleProduct, count: singleProductStock } );
+            return {...singleProduct, count: singleProductStock };
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async addProduct(product: INewProduct): Promise<IProductWzStock | null> {
+        let newCreatedProduct: IProduct | null;
+        let newCreatedProductStock: number;
+
+      try {
+        await this.client
+        .query(addProduct(product))
+        .then(res => newCreatedProduct = res.rows[0])
+        .catch(e => console.error(e.stack));
+
+        await this.client
+        .query(addProductStock(product))
+        .then(res => newCreatedProductStock = res.rows[0])
+        .catch(e => console.error(e.stack)); 
+        console.log('new product ', {...newCreatedProduct, count: newCreatedProductStock } );
+        return  {...newCreatedProduct, count: newCreatedProductStock };
+
+      } catch (err) {
+          console.error(err)
+      }
     }
 
     async deleteProductById(productId: string): Promise<IProduct[]> {        
-     
-        this.productDB.filter(p => p.id !== productId);
-        const newProductList = await this.getAllProducts();
-        return newProductList;
+     try {
+        await this.client
+        .query(deleteProductAndStock(productId))
+        .then(res => console.log('res after deleting ',res))
+        .catch(e => console.error(e.stack)); 
+    
+        this.products = await this.getAllProducts();
+        return this.products;
+     } catch (err) {
+         console.error(err);
+     }
     }
 
-    async updateProduct(productId: string, product: Partial<IProduct>): Promise<IProduct[]> {
-        const updatedProduct = await this.getProductById(productId);
-        const { title, description, price } = product;
-        if(title) {
-            updatedProduct.title = title;
-        } if(description) {
-            updatedProduct.description = description;
+    async updateProduct(productId: string, product: Partial<IProductWzStock>): Promise<IProductWzStock> {
+     
+        const { title, description, price, count } = product;
+
+        if (title) {
+            updateProductTitle(productId, title);
+        } if (description) {
+            updateProductDescr(productId, description);
         } if (price) {
-            updatedProduct.price = price;
+            updateProductPrice(productId, price) ;
+        } if (count) {
+            updateProductStock(productId, count);
         }
         
-        this.productDB.map(p => p.id === productId ? p = updatedProduct : p);
-        const newProductList = await this.getAllProducts();
-        return newProductList;
+        const resultedProduct = await this.getProductById(productId);
+       
+        return resultedProduct;
     }
 }

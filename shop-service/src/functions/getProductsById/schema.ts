@@ -1,6 +1,6 @@
 export default {
    title: "GetProductRequestBody",
    type: "object",
-   properties:{},
+   properties: {},
    additionalProperties: false     
 } as const;

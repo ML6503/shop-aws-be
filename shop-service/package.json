@@ -9,6 +9,7 @@
     "offline": "sls offline --noPrependStageInUrl",
     "log": "serverless logs -f <functionName>",
     "invoke:getProductsList": "sls invoke local --function getProductsList",
+    "invoke:getProductsById": "sls invoke local --function getProductsById --data `{ \"pathParameters\": { \"productId\": \"02219ff1-5675-4bb7-8af3-9077bf338c29\" } }`",
     "deploy": "sls deploy"
   },
   "engines": {
@@ -26,6 +27,7 @@
     "@types/aws-lambda": "^8.10.71",
     "@types/jest": "^28.1.1",
     "@types/node": "^14.14.25",
+    "@types/pg": "^8.6.5",
     "@types/uuid": "^8.3.4",
     "esbuild": "^0.14.11",
     "jest": "^28.1.1",
