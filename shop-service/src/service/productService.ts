@@ -56,12 +56,13 @@ const addProduct = (product: INewProduct) => {
     };
 };
 
-const addProductStock = (product: INewProduct) => {
+const addProductStock = (productId: string, count: number) => {
 
-    const { title, count  } = product;
+    // const { title, count  } = product;
     return {
         text: INSERT_ONE_PRODUCT_STOCK,
-        value: [ `(select id from product where title = ${title})`, count ]
+        // value: [ `(select id from product where title = ${title})`, count ]
+        value: [ productId, count ]
     };
 };
 
@@ -166,11 +167,13 @@ export default class ProductService {
         .catch(e => console.error(e.stack));
 
         await this.client
-        .query(addProductStock(product))
+        // .query(addProductStock(product))
+        .query(addProductStock(newCreatedProduct.id, product.count))
         .then(res => newCreatedProductStock = res.rows[0])
-        .catch(e => console.error(e.stack)); 
-        console.log('new product ', {...newCreatedProduct, count: newCreatedProductStock } );
-        return  {...newCreatedProduct, count: newCreatedProductStock };
+        .catch(e => console.error(e.stack));
+        const newProduct = await this.getProductById(newCreatedProduct.id);
+        console.log('new product ', newProduct );
+        return  newProduct;
 
       } catch (err) {
           console.error(err)

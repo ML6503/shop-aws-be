@@ -1,6 +1,5 @@
 import { errorServerResponse, formatJSONResponse } from '@libs/api-gateway';
 import { middyfy } from '@libs/lambda';
-import { loggerWrapper } from '@libs/logger';
 import ProductService from 'src/service/productService';
 
 export const getProductsList = async () => {
