@@ -2,29 +2,34 @@ import { errorNoProductResponse, errorServerResponse, ValidatedEventAPIGatewayPr
 import { formatJSONResponse } from '@libs/api-gateway';
 import { middyfy } from '@libs/lambda';
 import ProductService from 'src/service/productService';
-
+import { IProductWzStock } from 'src/types/product';
 import schema from './schema';
 
+
 export const getProductsById: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
- 
+  console.log('Request details from getProductsById: ', event);
+  const { productId } = event.pathParameters;
+
   try {
-    let product = null;
+    let product: IProductWzStock;
   
     if (event?.pathParameters && event.pathParameters?.productId) {
-      console.log('Request details from getProductsById: ', event);
-      const { productId } = event.pathParameters;
+     
       const productService = new ProductService;
-      product = await productService.getProductById(productId);    
+      product = await productService.getProductById(productId);
     }
 
     return product
       ? formatJSONResponse({
-          product: product,    
+        product: product,
         })
       : errorNoProductResponse;
 
   } catch (e) {
     console.error(e);
+    if(e.statusCode < 500) {
+      return e;
+    }
     return errorServerResponse;
   }
 };

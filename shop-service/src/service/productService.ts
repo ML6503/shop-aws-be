@@ -1,5 +1,6 @@
- import { IProduct, INewProduct, IProductWzStock } from "src/types/product";
-import PGClient from './pgClient';
+import { Client } from 'pg';
+import { IProduct, INewProduct, IProductWzStock } from "src/types/product";
+import { dbOptions } from './pgClient';
 
 const SELECT_ALL_PRODUCTS = 'SELECT * FROM product';
 const SELECT_ONE_PRODUCT_BY_ID = 'SELECT * FROM product WHERE id = $1';
@@ -25,6 +26,11 @@ const UPDATE_PRODUCT_DESCRIPTION = `UPDATE product SET description = $2 WHERE id
 
 const UPDATE_PRODUCT_STOCK = `UPDATE stocks SET count = $2 WHERE product_id = $1`;
 
+const SELECT_ONE_PRODUCT_WITH_STOCK_BY_ID = `SELECT p.id, s.count, p.price, p.title, p.description
+                                             FROM product p
+                                             INNER JOIN stocks s ON s.product_id =  p.id WHERE p.id = $1`;
+
+const SELECT_ONE_PRODUCT = `select * from product where id = $1`;
 
 const deleteProductAndStock =(productId: string) => {
     return {
@@ -43,6 +49,14 @@ const getOneProduct = (productId: string) => {
 const getOneProductStock = (productId: string) => {
     return {
         text: SELECT_ONE_PRODUCT_STOCK_BY_ID,
+        value: [productId]
+    };
+};
+
+const getOneProductWzStock = (productId: string) => {
+    return {
+        text: SELECT_ONE_PRODUCT_WITH_STOCK_BY_ID,
+        // text: SELECT_ONE_PRODUCT,
         value: [productId]
     };
 };
@@ -96,64 +110,79 @@ const updateProductStock = (productId: string, count: number) => {
 
 export default class ProductService {
 
-   private readonly client: PGClient;
+   private readonly client: Client;
    public products: Array<IProduct> | [];
+   public productsWithStock: Array<IProductWzStock> | [];
+   public singleProduct: IProductWzStock
 
     constructor() {
-        this.client = new PGClient();
+        this.client = new Client(dbOptions);
+        
         this.products = [];
+        this.productsWithStock = [];
+        this.singleProduct;
     }
+
+    connect (): void {
+        this.client.connect(err => {
+            if (err) {
+                console.error(err.stack);  
+                throw Error(`connection error: ${err.stack} `);
+            } else {
+              console.log('DB connected')
+            }
+          });
+    };
 
     async getAllProducts(): Promise<IProduct[]> {
        try {
-        await this.client
-        .query(SELECT_ALL_PRODUCTS)
-        .then(res => this.products = res.rows)
-        .catch(e => console.error(e.stack)); 
-       
-        return this.products;
+           this.connect();
+            const res = await this.client.query(SELECT_ALL_PRODUCTS);       
+            this.products = res.rows;
+        
+            return this.products;
 
        } catch (err) {
-           console.error(err);   
-        }
-    }
-
-    async getAllProductsWzStock(): Promise<IProductWzStock[]> {
-        let productsWzStock: IProductWzStock[] | null;
-       try {
-        await this.client
-        .query(SELECT_ALL_PRODUCTS_JOIN_STOCK)
-        .then(res => productsWzStock = res.rows)
-        .catch(e => console.error(e.stack)); 
-       
-       return productsWzStock;
-       } catch (err) {
-           console.log(err);
+           console.error(err.stack);   
+       } finally {
+            this.client.end();
        }
     }
 
-    async getProductById(productId: string): Promise<IProductWzStock> {
-        let singleProduct: IProduct | null;
-        let singleProductStock: number;
-        // let singleProductWzStock: IProductWzStock | null;
-
-        try {        
-            await this.client
-            .query(getOneProduct(productId))
-            .then(res => singleProduct = res.rows[0])
-            .catch(e => console.error(e.stack));
-            
-            await this.client
-            .query(getOneProductStock(productId))
-            .then(res => singleProductStock = res.rows[0])
-            .catch(e => console.error(e.stack));
-            console.log('product ', {...singleProduct, count: singleProductStock });
-
-            return {...singleProduct, count: singleProductStock };
-
+    async getAllProductsWzStock(): Promise<IProductWzStock[]> {
+        // let productsWzStock: IProductWzStock[] | null;
+        try {
+            this.connect();
+             const res = await this.client.query(SELECT_ALL_PRODUCTS_JOIN_STOCK);       
+             this.productsWithStock = res.rows;
+         
+             return this.productsWithStock;
+ 
         } catch (err) {
-            console.error(err);
+            console.error(err.stack);   
+        } finally {
+             this.client.end();
         }
+    }
+
+    async getProductById(productId: string): Promise<IProductWzStock> {    
+            
+        try {
+            this.connect();               
+            const res = await this.client.query(`
+                SELECT p.id, s.count, p.price, p.title, p.description
+                FROM product p
+                INNER JOIN stocks s ON s.product_id =  p.id WHERE p.id = '${productId}'`);       
+            
+            this.singleProduct = res.rows[0];
+            
+            return this.singleProduct;
+    
+        } catch (err) {
+            console.error(err.stack);   
+        } finally {
+                this.client.end();
+        }       
     }
 
     async addProduct(product: INewProduct): Promise<IProductWzStock | null> {
@@ -166,8 +195,7 @@ export default class ProductService {
         .then(res => newCreatedProduct = res.rows[0])
         .catch(e => console.error(e.stack));
 
-        await this.client
-        // .query(addProductStock(product))
+        await this.client 
         .query(addProductStock(newCreatedProduct.id, product.count))
         .then(res => newCreatedProductStock = res.rows[0])
         .catch(e => console.error(e.stack));

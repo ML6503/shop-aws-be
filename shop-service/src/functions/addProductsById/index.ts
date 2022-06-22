@@ -7,7 +7,7 @@ export default {
     {
       http: {
         method: 'put',
-        path: 'products',
+        path: 'products/{productId}',
         request: {
           schemas: {
             'application/json': AddProductRequest,

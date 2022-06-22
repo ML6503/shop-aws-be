@@ -7,7 +7,7 @@ import { AddProductRequest }  from './schema';
 
 const addProductsById: ValidatedEventAPIGatewayProxyEvent<typeof AddProductRequest> = async (event) => {
   const { title, description, price, count } = event?.body;
-  if(!title || !price) {
+  if(!event.body || !title || !price) {
     return errorBadRequest;
   }
 
