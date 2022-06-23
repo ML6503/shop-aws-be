@@ -47,7 +47,7 @@ export default class PGClient extends Client {
       foreign key ("product_id") references "product" ("id")
     )`);
  
-    await this.end()
+    await this.end();
   }
 
       

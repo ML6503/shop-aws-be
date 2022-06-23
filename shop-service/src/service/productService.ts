@@ -1,11 +1,11 @@
 import { Client } from 'pg';
 import { IProduct, INewProduct, IProductWzStock } from "src/types/product";
-import { dbOptions } from './pgClient';
+import PGClient, { dbOptions } from './pgClient';
 
 const SELECT_ALL_PRODUCTS = 'SELECT * FROM product';
 const SELECT_ONE_PRODUCT_BY_ID = 'SELECT * FROM product WHERE id = $1';
 const SELECT_ONE_PRODUCT_STOCK_BY_ID = 'SELECT count FROM stocks WHERE product_id = $1';
-const INSERT_ONE_PRODUCT = 'INSERT INTO product (title, description, price) VALUES ($1, $2, $3)';
+const INSERT_ONE_PRODUCT = 'INSERT INTO product (title, description, price) VALUES ($1, $2, $3) RETURNING *';
 const INSERT_ONE_PRODUCT_STOCK = 'INSERT INTO stocks (product_id, count) VALUES ($1, $2,)';
 // const SELECT_ALL_PRODUCTS_JOIN_STOCK = `SELECT *
 //                                         FROM product
@@ -111,14 +111,15 @@ const updateProductStock = (productId: string, count: number) => {
 export default class ProductService {
 
    private readonly client: Client;
-   public products: Array<IProduct> | [];
+//    public products: Array<IProduct> | [];
    public productsWithStock: Array<IProductWzStock> | [];
-   public singleProduct: IProductWzStock
+   public singleProduct: IProductWzStock;
 
     constructor() {
         this.client = new Client(dbOptions);
+        // this.client = new PGClient(dbOptions);
         
-        this.products = [];
+        // this.products = [];
         this.productsWithStock = [];
         this.singleProduct;
     }
@@ -132,22 +133,22 @@ export default class ProductService {
               console.log('DB connected')
             }
           });
-    };
-
-    async getAllProducts(): Promise<IProduct[]> {
-       try {
-           this.connect();
-            const res = await this.client.query(SELECT_ALL_PRODUCTS);       
-            this.products = res.rows;
-        
-            return this.products;
-
-       } catch (err) {
-           console.error(err.stack);   
-       } finally {
-            this.client.end();
-       }
     }
+
+    // async getAllProducts(): Promise<IProduct[]> {
+    //    try {
+    //        this.connect();
+    //         const res = await this.client.query(SELECT_ALL_PRODUCTS);       
+    //         this.products = res.rows;
+        
+    //         return this.products;
+
+    //    } catch (err) {
+    //        console.error(err.stack);   
+    //    } finally {
+    //         this.client.end();
+    //    }
+    // }
 
     async getAllProductsWzStock(): Promise<IProductWzStock[]> {
         // let productsWzStock: IProductWzStock[] | null;
@@ -168,7 +169,7 @@ export default class ProductService {
     async getProductById(productId: string): Promise<IProductWzStock> {    
             
         try {
-            this.connect();               
+            this.connect();       
             const res = await this.client.query(`
                 SELECT p.id, s.count, p.price, p.title, p.description
                 FROM product p
@@ -181,63 +182,80 @@ export default class ProductService {
         } catch (err) {
             console.error(err.stack);   
         } finally {
-                this.client.end();
+            this.client.end();
         }       
     }
 
     async addProduct(product: INewProduct): Promise<IProductWzStock | null> {
         let newCreatedProduct: IProduct | null;
-        let newCreatedProductStock: number;
-
+        // let newCreatedProductStock: number;
       try {
-        await this.client
-        .query(addProduct(product))
-        .then(res => newCreatedProduct = res.rows[0])
-        .catch(e => console.error(e.stack));
+        this.connect();
+        const queryAddProduct = addProduct(product);
+        const res = await this.client.query(queryAddProduct.text, queryAddProduct.value );
+        newCreatedProduct = res.rows[0];
 
-        await this.client 
-        .query(addProductStock(newCreatedProduct.id, product.count))
-        .then(res => newCreatedProductStock = res.rows[0])
-        .catch(e => console.error(e.stack));
+        const queryNewProduct = addProductStock(newCreatedProduct.id, product.count);
+        await this.client.query(queryNewProduct.text, queryNewProduct.value);
+       
         const newProduct = await this.getProductById(newCreatedProduct.id);
         console.log('new product ', newProduct );
         return  newProduct;
 
       } catch (err) {
-          console.error(err)
+            console.error(err.stack);
+      } finally {
+        this.client.end();
       }
     }
 
     async deleteProductById(productId: string): Promise<IProduct[]> {        
-     try {
-        await this.client
-        .query(deleteProductAndStock(productId))
-        .then(res => console.log('res after deleting ',res))
-        .catch(e => console.error(e.stack)); 
+        try {
+            this.connect();
+            
+            const queryDeleteProduct =  deleteProductAndStock(productId);
+            await this.client.query(queryDeleteProduct.text, queryDeleteProduct.value);
     
-        this.products = await this.getAllProducts();
-        return this.products;
-     } catch (err) {
-         console.error(err);
-     }
+            this.productsWithStock = await this.getAllProductsWzStock();
+            return this.productsWithStock;
+        } catch (err) {
+            console.error(err.stack);
+        } finally {
+            this.client.end();
+        }
     }
 
-    async updateProduct(productId: string, product: Partial<IProductWzStock>): Promise<IProductWzStock> {
-     
-        const { title, description, price, count } = product;
-
+    async updateProduct(productId: string, product: Partial<IProductWzStock>): Promise<IProductWzStock> {     
+        const { title, description, price, count } = product;  
+        try {
+            this.connect();
         if (title) {
-            updateProductTitle(productId, title);
+            const queryUpdateProductTitle = updateProductTitle(productId, title)
+            await this.client.query( queryUpdateProductTitle.text, queryUpdateProductTitle.value);
+
         } if (description) {
-            updateProductDescr(productId, description);
-        } if (price) {
-            updateProductPrice(productId, price) ;
-        } if (count) {
-            updateProductStock(productId, count);
+            const queryUpdateProductDescr = updateProductDescr(productId, description);
+            await this.client.query( queryUpdateProductDescr.text, queryUpdateProductDescr.value);
+
+        } if (price) {            
+            const queryUpdateProductPrice = updateProductPrice(productId, price);
+            await this.client.query( queryUpdateProductPrice.text, queryUpdateProductPrice.value);
+
+        } if (count) {  
+
+            const queryUpdateProductStock = updateProductStock(productId, count);
+            await this.client.query(queryUpdateProductStock.text, queryUpdateProductStock.value);
         }
         
         const resultedProduct = await this.getProductById(productId);
        
         return resultedProduct;
+
+        } catch (err) {
+            console.error(err.stack);
+
+        } finally {
+            this.client.end();
+        }
     }
 }

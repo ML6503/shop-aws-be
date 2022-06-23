@@ -29,6 +29,29 @@
             "description": "Bad request. Product not found"
           }
         }
+      },
+      "post": {
+        "summary": "addProductsById",
+        "description": "",
+        "operationId": "addProductsById.post.products",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Product created successfully",
+            "schema": {
+              "$ref": "#/definitions/{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"},\"title\":{\"type\":\"string\"},\"description\":{\"type\":\"string\"},\"price\":{\"type\":\"number\"},\"count\":{\"type\":\"number\"}}}"
+            }
+          },
+          "400": {
+            "description": "Bad request."
+          }
+        }
       }
     },
     "/products/{productId}": {
@@ -62,36 +85,6 @@
           },
           "404": {
             "description": "Product not found"
-          }
-        }
-      },
-      "put": {
-        "summary": "addProductsById",
-        "description": "",
-        "operationId": "addProductsById.put.products/{productId}",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "productId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Product created successfully",
-            "schema": {
-              "$ref": "#/definitions/{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"},\"title\":{\"type\":\"string\"},\"description\":{\"type\":\"string\"},\"price\":{\"type\":\"number\"},\"count\":{\"type\":\"number\"}}}"
-            }
-          },
-          "400": {
-            "description": "Bad request."
           }
         }
       }

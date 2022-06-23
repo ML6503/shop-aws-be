@@ -7,7 +7,6 @@ import schema from './schema';
 
 
 export const getProductsById: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
-  console.log('Request details from getProductsById: ', event);
   const { productId } = event.pathParameters;
 
   try {

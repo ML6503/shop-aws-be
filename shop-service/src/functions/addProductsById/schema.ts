@@ -1,5 +1,5 @@
 export const AddProductRequest = {
-  type: "object",
+  type: "application/json",
   properties: {
     title: {
       type: "string"
