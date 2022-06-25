@@ -31,9 +31,9 @@
         }
       },
       "post": {
-        "summary": "addProductsById",
+        "summary": "addProduct",
         "description": "",
-        "operationId": "addProductsById.post.products",
+        "operationId": "addProduct.post.products",
         "consumes": [
           "application/json"
         ],
