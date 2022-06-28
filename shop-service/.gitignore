@@ -20,3 +20,6 @@ dist
 
 # Tests
 tests
+
+# env
+.env
