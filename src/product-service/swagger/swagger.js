@@ -4,7 +4,7 @@
   "info": {
     "title": "shop-service",
     "version": "1"
-  },
+  },  
   "paths": {
     "/products": {
       "get": {
