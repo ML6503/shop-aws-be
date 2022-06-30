@@ -1,23 +1,23 @@
 import AWS from 'aws-sdk';
-const BUCKET = 'import-service-cyhandmade';
+const BUCKET = 'import-service-cyprushandmade';
 
 export default {
-    imagesList: async () => {
+    importProductsFile: async () => {
         const s3 = new AWS.S3({region: 'eu-west-1'});
         const params = {
             Bucket: BUCKET,
-            Prefix: 'images/'
+            Prefix: 'uploaded/'
         };
         let statusCode = 200;
         let body = {};
-        let images = [];
+        let files = [];
 
         try {
             const s3response = await s3.listObjectsV2(params).promise();
-            images = s3response.Contents;
+            files = s3response.Contents;
             body = JSON.stringify(
-                images.filter(img => img.Size)
-                .map(img => `htpps://${BUCKET}.s3.amazonaws.com/${ img.Key }`)
+                files.filter(file => file.Size)
+                .map(file => `htpps://${BUCKET}.s3.amazonaws.com/${ file.Key }`)
             );
         } catch (e) {
             console.error('Error: ', e);
