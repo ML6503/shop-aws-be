@@ -42,10 +42,10 @@ module.exports.importProductsFile = async (event) => {
            if(error) {
                throw Error(error);
            }
-           body = JSON.stringify({ url });
+           body = JSON.stringify({ url }, null, 2);
        });
       
-       
+       console.log('BODY: ', body);
              
     } catch (e) {
         console.error('Error: ', e);
