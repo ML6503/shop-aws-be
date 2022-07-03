@@ -1,45 +1,47 @@
-import { S3 } from 'aws-sdk';
-import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK, NOT_FOUND, ACCEPTED } from 'http-status';
+const { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } = require('http-status');
+const { createPresignedPost } = require("@aws-sdk/s3-presigned-post");
+const { S3Client } =require("@aws-sdk/client-s3");
 
 const BUCKET = 'import-service-cyprushandmade';
-
-
-const IMPORT = 'import';
 const UPLOADED = 'uploaded';
-const PARSED = 'parsed';
 
-export default async function importProductsFile (event) {
+
+module.exports.importProductsFile = async (event) => {
+    
+    const client = new S3Client({region: 'eu-west-1'});
+    let body = {};
+    console.log('event query string params: ', event.queryStringParameters.name);
     if (!event.queryStringParameters.name) {
-        throw new Error(BAD_REQUEST)
+        body = JSON.stringify({ message: 'Your request is missing some params.' }, null, 2);
+        return {
+            statusCode: BAD_REQUEST,
+            headers: { 'Access-Control-Allow-Origin': '*' },
+            body
+        };
     }
     
     const fileName = event.queryStringParameters.name;
 
-    const s3 = new S3({region: 'eu-west-1'});
-    const params = {
-        Bucket: BUCKET,
-        Prefix: `${UPLOADED}/`
-    };
-
-    let body = {};
-    let files = [];
-
     try {
-        const s3response = await s3.listObjectsV2(params).promise();
-        files = s3response.Contents;
-        body = JSON.stringify(
-            files.filter(file => file.Size)
-            .map(file => `https://${BUCKET}.s3.eu-west-1.amazonaws.com/${file.Key}`)
-        );
+
+        const params = {
+            Bucket: BUCKET,
+            Key: `${UPLOADED}/${fileName}`
+        };  
+        
+        const { url } = await createPresignedPost(client, params);
+      
+        body = JSON.stringify({ url }, null, 2);
+             
     } catch (e) {
         console.error('Error: ', e);
         statusCode = INTERNAL_SERVER_ERROR;
         body = e;
-    }
-
+    }        
+   
     return {
         statusCode: OK,
-        headers: {'Access-Control-Allow-Origin': '*'},
+        headers: { 'Access-Control-Allow-Origin': '*' },
         body
     };
 };

@@ -1,8 +1,8 @@
 import { errorNoProductResponse, errorServerResponse, ValidatedEventAPIGatewayProxyEvent } from '@libs/api-gateway';
 import { formatJSONResponse } from '@libs/api-gateway';
 import { middyfy } from '@libs/lambda';
-import ProductService from 'src/service/productService';
-import { IProductWzStock } from 'src/types/product';
+import ProductService from 'src-product/service/productService';
+import { IProductWzStock } from 'src-product/types/product';
 import schema from './schema';
 
 

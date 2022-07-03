@@ -1,22 +1,28 @@
-const status  =  require('http-status');
-const AWS =  require('aws-sdk');
+const  { S3 } = require('aws-sdk');
+const { NOT_FOUND, ACCEPTED } = require('http-status');
 
 const BUCKET = 'import-service-cyprushandmade';
-const IMPORT = 'import';
+
 const UPLOADED = 'uploaded';
 const PARSED = 'parsed';
 
-export default async function importFileParser (event) {
-    const s3 = new AWS.S3({region: 'eu-west-1'});
+module.exports.importFileParser = async (event) => {
+    const s3 = new S3({region: 'eu-west-1'});
 
     if (!event.Records) {
         return {
-            statusCode: status.NOT_FOUND
+            statusCode: NOT_FOUND
         }
     }
 
     try {
         for (record of event.Records) {
+
+        //     const s3Stream = s3.getObject(params).createReadStream();
+        
+        // s3Stream
+        // .on('data', ())
+
                 await s3.copyObject({
                     Bucket: BUCKET,                       
                     CopySource: BUCKET + '/' + record.s3.object.key, 
@@ -32,7 +38,7 @@ export default async function importFileParser (event) {
         
                 return {
                     headers: {'Access-Control-Allow-Origin': '*'},
-                    statusCode: status.ACCEPTED
+                    statusCode: ACCEPTED
                 }
         }    
     } catch (e) {
