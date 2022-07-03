@@ -4,6 +4,5 @@ import type {  Handler } from "aws-lambda"
 import { loggerWrapper } from "./logger" 
 
 export const middyfy = (handler:  Handler) => {
-  return middy(loggerWrapper(handler)).use(middyJsonBodyParser())
-  // return middy(handler).use(middyJsonBodyParser());
+  return middy(loggerWrapper(handler)).use(middyJsonBodyParser()); 
 }

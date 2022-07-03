@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.paths.json",
   "compilerOptions": {
+    "types": ["node"],
     "lib": ["ESNext"],
     "moduleResolution": "node",
     "noUnusedLocals": true,
@@ -13,7 +14,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": ["src/**/*.ts", "serverless.ts"],
+  "include": ["./src-product/**/*.ts", "serverless.ts"],
   "exclude": [
     "node_modules/**/*",
     ".serverless/**/*",

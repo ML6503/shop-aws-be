@@ -1,4 +1,3 @@
-// import { AddProductRequest, AddProductResponse} from './schema';
 import { AddProductResponse} from './schema';
 import { handlerPath } from '@libs/handler-resolver';
 
@@ -9,13 +8,7 @@ export default {
     {
       http: {
         method: 'post',
-        path: 'products',
-        // headers: accessHeaders,
-        // request: {
-        //   schemas: {
-        //     'application/json': AddProductRequest,
-        //   },
-        // },
+        path: 'products',      
         responses: {
           200: {
             description: 'Product created successfully',

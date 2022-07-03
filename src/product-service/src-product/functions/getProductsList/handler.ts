@@ -1,7 +1,6 @@
 import { errorServerResponse, formatJSONResponse } from '@libs/api-gateway';
 import { middyfy } from '@libs/lambda';
-import ProductService from 'src/service/productService';
-
+import ProductService from 'src-product/service/productService';
 export const getProductsList = async () => {
  try {
   

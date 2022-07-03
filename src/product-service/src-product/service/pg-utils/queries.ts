@@ -1,4 +1,4 @@
-import { INewProduct } from "src/types/product";
+import { INewProduct } from "../../types/product";
 import { DELETE_ONE_PRODUCT_BY_ID, SELECT_ONE_PRODUCT_WITH_STOCK_BY_ID, INSERT_ONE_PRODUCT, INSERT_ONE_PRODUCT_STOCK, UPDATE_PRODUCT_TITLE, UPDATE_PRODUCT_PRICE, UPDATE_PRODUCT_DESCRIPTION, UPDATE_PRODUCT_STOCK } from "./queryText";
 
 const deleteProductAndStock =(productId: string) => {

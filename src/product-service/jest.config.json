@@ -5,13 +5,13 @@
     },
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.ts?$",
     "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"],
-    "moduleDirectories": ["node_modules", "src"],
+    "moduleDirectories": ["node_modules", "src-product"],
     "testEnvironment": "node",
     "moduleNameMapper": {
-      "@functions/*": "<rootDir>/src/functions/$",
-      "@libs/api-gateway": "<rootDir>/src/libs/api-gateway",
-      "@libs/lambda": "<rootDir>/src/libs/lambda",
-      "src/(.*)": "<rootDir>/src/$1"
+      "@functions/*": "<rootDir>/src-product/functions/$",
+      "@libs/api-gateway": "<rootDir>/src-product/libs/api-gateway",
+      "@libs/lambda": "<rootDir>/src-product/libs/lambda",
+      "src-product/(.*)": "<rootDir>/src-product/$1"
     }
      
   }

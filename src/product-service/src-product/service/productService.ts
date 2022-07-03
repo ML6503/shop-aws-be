@@ -1,5 +1,5 @@
 import { Client } from 'pg';
-import { IProduct, INewProduct, IProductWzStock } from "src/types/product";
+import { IProduct, INewProduct, IProductWzStock } from "../types/product";
 import { dbOptions } from './pg-utils';
 import { getOneProductWzStock, addProductQuery, addProductStock, deleteProductAndStock, updateProductTitle, updateProductDescr, updateProductPrice, updateProductStock } from './pg-utils/queries';
 import { SELECT_ALL_PRODUCTS_JOIN_STOCK } from './pg-utils/queryText';
