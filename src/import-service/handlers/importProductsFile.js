@@ -1,21 +1,28 @@
 const { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } = require('http-status');
-const { createPresignedPost } = require("@aws-sdk/s3-presigned-post");
-const { S3Client } =require("@aws-sdk/client-s3");
+const  { S3 } = require('aws-sdk');
 
+const s3 = new S3({region: 'eu-west-1'});
 const BUCKET = 'import-service-cyprushandmade';
 const UPLOADED = 'uploaded';
 
+const accessHeaders = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Headers" : "Origin, X-Requested-With, Content-Type, Accept",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "*",
+    "Access-Control-Allow-Credentials": true
+  };
 
-module.exports.importProductsFile = async (event) => {
-    
-    const client = new S3Client({region: 'eu-west-1'});
+module.exports.importProductsFile = async (event) => {    
+
     let body = {};
     console.log('event query string params: ', event.queryStringParameters.name);
     if (!event.queryStringParameters.name) {
-        body = JSON.stringify({ message: 'Your request is missing some params.' }, null, 2);
+        body = JSON.stringify({ message: 'Your request is missing some params.' });
+        
         return {
             statusCode: BAD_REQUEST,
-            headers: { 'Access-Control-Allow-Origin': '*' },
+            headers: accessHeaders,
             body
         };
     }
@@ -26,12 +33,19 @@ module.exports.importProductsFile = async (event) => {
 
         const params = {
             Bucket: BUCKET,
-            Key: `${UPLOADED}/${fileName}`
-        };  
+            Key: `${UPLOADED}/${fileName}`,    
+            ContentType: 'text/csv'
+        };
+       
         
-        const { url } = await createPresignedPost(client, params);
+       s3.getSignedUrl('putObject', params, (error, url) => {
+           if(error) {
+               throw Error(error);
+           }
+           body = JSON.stringify({ url });
+       });
       
-        body = JSON.stringify({ url }, null, 2);
+       
              
     } catch (e) {
         console.error('Error: ', e);
@@ -41,7 +55,7 @@ module.exports.importProductsFile = async (event) => {
    
     return {
         statusCode: OK,
-        headers: { 'Access-Control-Allow-Origin': '*' },
+        headers: accessHeaders,
         body
     };
 };
