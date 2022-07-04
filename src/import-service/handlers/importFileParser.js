@@ -29,46 +29,19 @@ module.exports.importFileParser = async (event) => {
                 Key: record.s3.object.key.replace(UPLOADED, PARSED)   
             };
 
-            const readStream = s3.getObject(uploadedParams).createReadStream(record.s3.object.key);
-
-            const stream = require('stream');
-
-            const uploadStream = ({ Bucket, Key }) => {
-             
-              const pass = new stream.PassThrough();
-              return {
-                writeStream: pass,
-                promise: s3.upload({ Bucket, Key, Body: pass }).promise(),
-              }
-            };
-
-            const { writeStream } = uploadStream(parsedParams);
-
-
-            const pipeline = readStream.pipe(csv()).pipe(writeStream);
-
-            pipeline.on('data', () => {
-                results.push(data);
-              });
-              pipeline.on('close', () => {
-                
-                results.forEach(fileData => console.log('Data from uploaded file: ', fileData))
-              });
-              pipeline.on('error', (err) => {
-                console.log('upload failed', err.message)
-              });
+            const readStream = s3.getObject(uploadedParams).createReadStream(record.s3.object.key);           
         
-            // readStream
-            // .pipe(csv())
-            // .on('data', (data) => results.push(data))
-            // .on('error', (error) => {
-            //     throw Error(error);
-            // })
-            // .on('end', () => results.forEach(fileData => console.log('Data from file: ', fileData)));   
+            readStream
+            .pipe(csv())
+            .on('data', (data) => results.push(data))
+            .on('error', (error) => {
+                throw Error(error);
+            })
+            .on('end', () => results.forEach(fileData => console.log('Data from file: ', fileData)));   
 
-            // await s3.copyObject(parsedParams).promise();
+            await s3.copyObject(parsedParams).promise();
         
-            // await s3.deleteObject(uploadedParams).promise();
+            await s3.deleteObject(uploadedParams).promise();
                 
             console.log(`File ${record.s3.object.key .split('/')[1]} has been imported`);
         
