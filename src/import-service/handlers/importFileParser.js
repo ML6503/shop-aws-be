@@ -1,6 +1,7 @@
 const  { S3 } = require('aws-sdk');
 const { NOT_FOUND, ACCEPTED, INTERNAL_SERVER_ERROR } = require('http-status');
 const csv = require('csv-parser');
+
 const { BUCKET, UPLOADED, PARSED, ACCESS_HEADERS } = require('../common/constants');
 
 
@@ -17,31 +18,57 @@ module.exports.importFileParser = async (event) => {
     try {
        
         for (record of event.Records) {
-            const params = {
+            const uploadedParams = {
                     Bucket: BUCKET,         
                     Key: record.s3.object.key
             };
 
-            const s3Stream = s3.getObject(params).createReadStream(record.s3.object.key);
-        
-            s3Stream
-            .pipe(csv())
-            .on('data', (data) => results.push(data))
-            .on('error', (error) => {
-                throw Error(error.stack);
-            })
-            .on('end', () => results.forEach(file => console.log(file)));
-    
-
-           
-
-            await s3.copyObject({
+            const parsedParams = {
                 Bucket: BUCKET,                       
                 CopySource: BUCKET + '/' + record.s3.object.key, 
                 Key: record.s3.object.key.replace(UPLOADED, PARSED)   
-            }).promise();
+            };
+
+            const readStream = s3.getObject(uploadedParams).createReadStream(record.s3.object.key);
+
+            const stream = require('stream');
+
+            const uploadStream = ({ Bucket, Key }) => {
+             
+              const pass = new stream.PassThrough();
+              return {
+                writeStream: pass,
+                promise: s3.upload({ Bucket, Key, Body: pass }).promise(),
+              }
+            };
+
+            const { writeStream } = uploadStream(parsedParams);
+
+
+            const pipeline = readStream.pipe(csv()).pipe(writeStream);
+
+            pipeline.on('data', () => {
+                results.push(data);
+              });
+              pipeline.on('close', () => {
+                
+                results.forEach(fileData => console.log('Data from uploaded file: ', fileData))
+              });
+              pipeline.on('error', (err) => {
+                console.log('upload failed', err.message)
+              });
         
-            await s3.deleteObject(params).promise();
+            // readStream
+            // .pipe(csv())
+            // .on('data', (data) => results.push(data))
+            // .on('error', (error) => {
+            //     throw Error(error);
+            // })
+            // .on('end', () => results.forEach(fileData => console.log('Data from file: ', fileData)));   
+
+            // await s3.copyObject(parsedParams).promise();
+        
+            // await s3.deleteObject(uploadedParams).promise();
                 
             console.log(`File ${record.s3.object.key .split('/')[1]} has been imported`);
         
@@ -49,7 +76,8 @@ module.exports.importFileParser = async (event) => {
                 headers: ACCESS_HEADERS,
                 statusCode: ACCEPTED
             }
-        }    
+        }
+
     } catch (e) {
         console.error(e);
         return {
