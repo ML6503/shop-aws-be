@@ -1,18 +1,7 @@
 const  { S3 } = require('aws-sdk');
-const { NOT_FOUND, ACCEPTED } = require('http-status');
+const { NOT_FOUND, ACCEPTED, INTERNAL_SERVER_ERROR } = require('http-status');
 const csv = require('csv-parser');
-
-const BUCKET = 'import-service-cyprushandmade';
-
-const UPLOADED = 'uploaded';
-const PARSED = 'parsed';
-const accessHeaders = {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Headers" : "Origin, X-Requested-With, Content-Type, Accept",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "*",
-    "Access-Control-Allow-Credentials": true
-  };
+const { BUCKET, UPLOADED, PARSED, ACCESS_HEADERS } = require('../common/constants');
 
 
 module.exports.importFileParser = async (event) => {
@@ -46,22 +35,27 @@ module.exports.importFileParser = async (event) => {
 
            
 
-                await s3.copyObject({
-                    Bucket: BUCKET,                       
-                    CopySource: BUCKET + '/' + record.s3.object.key, 
-                    Key: record.s3.object.key.replace(UPLOADED, PARSED)   
-                }).promise();
+            await s3.copyObject({
+                Bucket: BUCKET,                       
+                CopySource: BUCKET + '/' + record.s3.object.key, 
+                Key: record.s3.object.key.replace(UPLOADED, PARSED)   
+            }).promise();
         
-                await s3.deleteObject(params).promise();
+            await s3.deleteObject(params).promise();
                 
-                console.log(`File ${record.s3.object.key .split('/')[1]} has been imported`);
+            console.log(`File ${record.s3.object.key .split('/')[1]} has been imported`);
         
-                return {
-                    headers: accessHeaders,
-                    statusCode: ACCEPTED
-                }
+            return {
+                headers: ACCESS_HEADERS,
+                statusCode: ACCEPTED
+            }
         }    
     } catch (e) {
         console.error(e);
+        return {
+            headers: ACCESS_HEADERS,
+            statusCode: INTERNAL_SERVER_ERROR,
+            body: JSON.stringify({ message: e })
+        }
     }
 };

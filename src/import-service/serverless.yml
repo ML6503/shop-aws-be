@@ -1,0 +1,47 @@
+   service: import-service-cyprushandmade
+
+   custom:
+      bucketName: import-service-cyprushandmade
+
+   provider:
+      name: aws
+      runtime: nodejs14.x
+      stage: dev 
+      region: 'eu-west-1'
+      lambdaHashingVersion: 20201221
+
+      iamRoleStatements:
+         - Effect: "Allow"
+           Action:
+             - "s3:ListBucket"
+           Resource:
+             - arn:aws:s3:::${self:custom.bucketName}
+
+         - Effect: "Allow"
+           Action:
+             - "s3:*"
+           Resource:
+             - arn:aws:s3:::${self:custom.bucketName}/*
+
+   functions:
+      importProductsFile:
+          handler: handlers/importProductsFile.importProductsFile
+          events:
+            - http:
+                method: get
+                path: import
+                cors: true
+                request:
+                  parameters:
+                    querystrings:
+                      name: true
+
+      importFileParser:
+          handler: handlers/importFileParser.importFileParser
+          events:
+            - s3:
+                bucket: import-service-cyprushandmade
+                event: s3:ObjectCreated:*
+                rules:
+                    - prefix: uploaded/
+                existing: true
