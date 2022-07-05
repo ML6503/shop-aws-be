@@ -30,7 +30,8 @@ module.exports.importFileParser = async (event) => {
             };
 
             const readStream = s3.getObject(uploadedParams).createReadStream(record.s3.object.key);           
-            await new Promise((resolve, reject) => {
+            
+             await new Promise((resolve, reject) => {
                 readStream
                 .pipe(csv())
                 .on('data', (data) => results.push(data))

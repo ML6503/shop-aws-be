@@ -2,6 +2,7 @@
 
    custom:
       bucketName: import-service-cyprushandmade
+      queueName: productsSQSQueue
 
    provider:
       name: aws
@@ -9,6 +10,8 @@
       stage: dev 
       region: 'eu-west-1'
       lambdaHashingVersion: 20201221
+      environment:
+        SQS_QUEUE_URL: { Ref: ${self:custom.queueName} }
 
       iamRoleStatements:
          - Effect: "Allow"
@@ -22,6 +25,11 @@
              - "s3:*"
            Resource:
              - arn:aws:s3:::${self:custom.bucketName}/*
+         - Effect: Allow
+              Action:
+                - sqs:*
+              Resource:
+                Fn::GetAtt: [ ${self:custom.queueName}, Arn ]
 
    functions:
       importProductsFile:
@@ -45,5 +53,26 @@
                 rules:
                     - prefix: uploaded/
                 existing: true
+            
       
-      catalogBatchProcess: handlers/catalogBatchProcess.catalogBatchProcess
+      catalogBatchProcess:
+          handler: handlers/catalogBatchProcess.catalogBatchProcess
+          events:
+            - sqs:
+            arn: arn:aws:sqs:region:eu-west-1:${self:custom.queueName}
+            batchSize: 5
+
+            # get called every time a message is sent to the queue 
+            - sqs:
+                arn:
+                  Fn::GetAtt:
+                    - ${self:custom.queueName}
+                    - Arn
+     
+     resources:
+      Resources:
+        NewSQSQueue:
+          Type: "AWS::SQS::Queue"
+          Properties:
+            QueueName: ${self:custom.queueName}             
+
