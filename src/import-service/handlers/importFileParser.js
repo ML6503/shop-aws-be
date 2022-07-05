@@ -37,15 +37,16 @@ module.exports.importFileParser = async (event) => {
                 .on('error', (error) => {
                     reject(error);
                 })
-                .on('end', () => { 
+                .on('end', async () => { 
                     results.forEach(fileData => 
                     console.log('Data from file: ', fileData));
-                    
-                    resolve( async() => {
-                        await s3.copyObject(parsedParams).promise();
-            
-                        await s3.deleteObject(uploadedParams).promise();
 
+                    await s3.copyObject(parsedParams).promise();
+            
+                    await s3.deleteObject(uploadedParams).promise();
+
+                    
+                    resolve( async() => {    
                         console.log(`File ${record.s3.object.key .split('/')[1]} has been imported & parsed`)
                     });
                 });   
