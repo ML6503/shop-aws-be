@@ -30,21 +30,27 @@ module.exports.importFileParser = async (event) => {
             };
 
             const readStream = s3.getObject(uploadedParams).createReadStream(record.s3.object.key);           
-        
-            readStream
-            .pipe(csv())
-            .on('data', (data) => results.push(data))
-            .on('error', (error) => {
-                throw Error(error);
-            })
-            .on('end', () => results.forEach(fileData => console.log('Data from file: ', fileData)));   
+            await new Promise((resolve, reject) => {
+                readStream
+                .pipe(csv())
+                .on('data', (data) => results.push(data))
+                .on('error', (error) => {
+                    reject(error);
+                })
+                .on('end', () => { 
+                    results.forEach(fileData => 
+                    console.log('Data from file: ', fileData));
+                    
+                    resolve( async() => {
+                        await s3.copyObject(parsedParams).promise();
+            
+                        await s3.deleteObject(uploadedParams).promise();
 
-            await s3.copyObject(parsedParams).promise();
-        
-            await s3.deleteObject(uploadedParams).promise();
+                        console.log(`File ${record.s3.object.key .split('/')[1]} has been imported & parsed`)
+                    });
+                });   
+            });
                 
-            console.log(`File ${record.s3.object.key .split('/')[1]} has been imported`);
-        
             return {
                 headers: ACCESS_HEADERS,
                 statusCode: ACCEPTED
