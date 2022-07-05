@@ -45,3 +45,5 @@
                 rules:
                     - prefix: uploaded/
                 existing: true
+      
+      catalogBatchProcess: handlers/catalogBatchProcess.catalogBatchProcess

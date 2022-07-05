@@ -1,7 +1,7 @@
 import { INewProduct } from "../../types/product";
 import { DELETE_ONE_PRODUCT_BY_ID, SELECT_ONE_PRODUCT_WITH_STOCK_BY_ID, INSERT_ONE_PRODUCT, INSERT_ONE_PRODUCT_STOCK, UPDATE_PRODUCT_TITLE, UPDATE_PRODUCT_PRICE, UPDATE_PRODUCT_DESCRIPTION, UPDATE_PRODUCT_STOCK } from "./queryText";
 
-const deleteProductAndStock =(productId: string) => {
+const deleteProductAndStock = (productId: string) => {
     return {
         text: DELETE_ONE_PRODUCT_BY_ID,
         value: [productId]
@@ -17,7 +17,7 @@ const getOneProductWzStock = (productId: string) => {
 };
 
 const addProductQuery = (product: INewProduct) => {
-    const { title, description, price,  } = product;
+    const { title, description, price } = product;
     return {
         text: INSERT_ONE_PRODUCT,
         value:  [`${title}`, `${description}`, price]
