@@ -29,16 +29,16 @@ export default class ProductService {
 
     async createDB (): Promise<void> {
         const UUID = `CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-        const CREATE_TABLE_PRODUCT = `create table IF NOT EXISTS product (
-            id uuid not null DEFAULT uuid_generate_v4 () PRIMARY KEY,
-            title text not null unique,
-            description text,
-            price integer
+        const CREATE_TABLE_PRODUCT = `create table IF NOT EXISTS "product" (
+            "id" uuid not null DEFAULT uuid_generate_v4 () PRIMARY KEY,
+            "title" text not null unique,
+            "description" text,
+            "price" integer
             )`;
         
-        const CREATE_TABLE_STOCK = `create table IF NOT EXISTS stocks (
-            product_id uuid references product(id),
-            count integer
+        const CREATE_TABLE_STOCK = `create table IF NOT EXISTS "stocks" (
+            "product_id" uuid references product("id"),
+            "count" integer
             )`;
 
         try {
