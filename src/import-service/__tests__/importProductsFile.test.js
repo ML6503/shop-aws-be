@@ -1,6 +1,6 @@
 const AWS  = require('aws-sdk-mock');
 const { promisify } = require('util');
-const { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } = require('http-status');
+
 const { importProductsFile } = require('../handler');
 const eventStub = require('./stubs/httpApiGatewayEvent.json');
 
@@ -23,9 +23,9 @@ describe('importProductFile signed uploads', () => {
     test('should send string link for a signed upload on success', () => {
         const event = eventStub;
         const context = {};
-        // const result = importProductsFile(event, context);
+    
         const result = handler(event, context);
-       result.then(data => expect(data).toMatchSnapshot());
+        result.then(data => expect(data).toMatchSnapshot());
 
     });
 });

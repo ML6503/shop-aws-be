@@ -2,7 +2,7 @@
 
    custom:
       bucketName: import-service-cyprushandmade
-      queueName: productsSQSQueue
+      queueName: catalogItemsQueue
 
    provider:
       name: aws
@@ -71,7 +71,7 @@
      
      resources:
       Resources:
-        NewSQSQueue:
+        ${self:custom.queueName}:
           Type: "AWS::SQS::Queue"
           Properties:
             QueueName: ${self:custom.queueName}             
