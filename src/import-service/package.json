@@ -3,10 +3,7 @@
     "type": "commonjs",
     "scripts": {
         "test": "jest",
-        "offline": "sls offline --noPrependStageInUrl",
         "log:import": "serverless logs -f  importProductsFile",
-        "invoke:importProductsFile": "sls invoke local --function importProductsFile",
-        "invoke:importFileParser": "sls invoke local --function importFileParser",
         "deploy": "sls deploy"
     },
     "dependencies": {
@@ -16,6 +13,7 @@
         "prettier": "^2.7.1"
     },
     "devDependencies": {
-        "aws-sdk-mock": "^5.7.0"
+        "aws-sdk-mock": "^5.7.0",
+        "jest": "^28.1.2"
     }
 }
