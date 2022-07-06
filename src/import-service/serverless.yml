@@ -33,7 +33,7 @@
 
    functions:
       importProductsFile:
-          handler: handlers/importProductsFile.importProductsFile
+          handler: handler.importProductsFile
           events:
             - http:
                 method: get
@@ -45,7 +45,7 @@
                       name: true
 
       importFileParser:
-          handler: handlers/importFileParser.importFileParser
+          handler: handler.importFileParser
           events:
             - s3:
                 bucket: import-service-cyprushandmade
@@ -56,7 +56,7 @@
             
       
       catalogBatchProcess:
-          handler: handlers/catalogBatchProcess.catalogBatchProcess
+          handler: handler.catalogBatchProcess
           events:
             - sqs:
             arn: arn:aws:sqs:region:eu-west-1:${self:custom.queueName}

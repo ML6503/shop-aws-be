@@ -12,7 +12,8 @@
     "dependencies": {
         "aws-sdk": "^2.1167.0",
         "csv-parser": "^3.0.0",
-        "http-status": "^1.5.2"
+        "http-status": "^1.5.2",
+        "prettier": "^2.7.1"
     },
     "devDependencies": {
         "aws-sdk-mock": "^5.7.0"
