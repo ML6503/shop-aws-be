@@ -1,12 +1,27 @@
-const  { S3 } = require('aws-sdk');
+const  AWS = require('aws-sdk');
 const { NOT_FOUND, ACCEPTED, INTERNAL_SERVER_ERROR } = require('http-status');
 const csv = require('csv-parser');
 
 const { BUCKET, UPLOADED, PARSED, ACCESS_HEADERS } = require('../common/constants');
 
+const sqs = new AWS.SQS();
+// https://docs.aws.amazon.com/code-samples/latest/catalog/javascript-sqs-sqs_sendmessage.js.html
+
+const sendMessage = (params) => {
+    sqs.sendMessage(params, (err, data) => {
+        if (err) {
+          console.error("Error", err);
+        } else {
+          console.log("Success", data.MessageId);
+        }
+      });
+};
 
 module.exports.importFileParser = async (event) => {
-    const s3 = new S3({region: 'eu-west-1'});
+    const s3 = new AWS.S3({ region: process.env.REGION });
+    AWS.config.update({ region: process.env.REGION });
+    
+
     const results = [];
 
     if (!event.Records) {
