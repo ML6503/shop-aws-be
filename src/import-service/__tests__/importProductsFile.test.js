@@ -23,7 +23,8 @@ describe('importProductFile signed uploads', () => {
     test('should send string link for a signed upload on success', () => {
         const event = eventStub;
         const context = {};
-        const result = importProductsFile(event, context);
+        // const result = importProductsFile(event, context);
+        const result = handler(event, context);
        result.then(data => expect(data).toMatchSnapshot());
 
     });
