@@ -1,7 +1,7 @@
 import { errorServerResponse, ValidatedEventAPIGatewayProxyEvent } from '@libs/api-gateway';
 import { formatJSONResponse, errorBadRequest } from '@libs/api-gateway';
 import { middyfy } from '@libs/lambda';
-import ProductService from 'src/service/productService';
+import ProductService from 'src-product/service/productService';
 import { AddProductRequest }  from './schema';
 
 

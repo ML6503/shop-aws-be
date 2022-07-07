@@ -13,8 +13,28 @@
       stage: dev 
       region: ${self:custom.region}
       lambdaHashingVersion: 20201221
+      
       environment:
-        SQS_QUEUE_URL: { Ref: ${self:custom.queueName} }
+        SQS_QUEUE_URL:
+          Ref: SQSQueue
+      
+      resources:
+        Resources:
+          SQSQueue:
+            Type: AWS::SQS::Queue
+            Properties:
+              QueueName: ${self:custom.queueName}
+
+          ProductTopic:
+            Type: AWS::SNS::Topic
+            Properties:
+              TopicName: ${self:custom.topicName}
+
+          ${self:custom.dlqName}:
+            Type: AWS::SQS:Queue
+            Poperties:
+              QueueName: ${self:custom.dlqName}
+
 
       iamRoleStatements:
          - Effect: "Allow"
@@ -73,7 +93,7 @@
                     - Arn
             # get triggerred for message sent to createProduct Topic
             - sns:
-              arn: !Ref ${self:custom.queueName}
+              arn: !Ref ProductTopic
               topicName: ${self:custom.queueName}
               displayName: New product data to create product
               filterPolicy:
@@ -82,20 +102,3 @@
                   - dagger
               redrivePolicy: 
                 deadLetterTargetArn: arn:aws:sqs:${self:custom.region}:11111111111:${self:custom.dlqName}
-     
-     resources:
-      Resources:
-        ${self:custom.queueName}:
-          Type: AWS::SQS::Queue
-          Properties:
-            QueueName: ${self:custom.queueName}
-        ${self:custom.topicName}:
-          Type: AWS::SNS::Topic
-          Properties:
-            TopicName: ${self:custom.topicName}
-        ${self:custom.dlqName}:
-          Type: AWS::SQS:Queue
-          Poperties: ${self:custom.dlqName}
-
-
-

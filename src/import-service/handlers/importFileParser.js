@@ -7,14 +7,11 @@ const { BUCKET, UPLOADED, PARSED, ACCESS_HEADERS } = require('../common/constant
 const sqs = new AWS.SQS();
 // https://docs.aws.amazon.com/code-samples/latest/catalog/javascript-sqs-sqs_sendmessage.js.html
 
-const sendMessage = (params) => {
-    sqs.sendMessage(params, (err, data) => {
-        if (err) {
-          console.error("Error", err);
-        } else {
-          console.log("Success", data.MessageId);
-        }
-      });
+const sendMessage = async (fileData) => {
+    await sqs.sendMessage({
+        QueueUrl: process.env.SQS_QUEUE_URL,
+        MessageBody: fileData
+    }, () => console.log('message sent with body:', fileData)).promise();
 };
 
 module.exports.importFileParser = async (event) => {
@@ -56,6 +53,8 @@ module.exports.importFileParser = async (event) => {
                 .on('end', async () => { 
                     results.forEach(fileData => 
                     console.log('Data from file: ', fileData));
+
+                    await sendMessage(fileData);
 
                     await s3.copyObject(parsedParams).promise();
             
