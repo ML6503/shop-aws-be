@@ -1,14 +1,17 @@
    service: import-service-cyprushandmade
 
    custom:
+      region: eu-west-1
       bucketName: import-service-cyprushandmade
       queueName: catalogItemsQueue
+      topicName: createProductTopic
+      dlqName: productDLQ
 
    provider:
       name: aws
       runtime: nodejs14.x
       stage: dev 
-      region: 'eu-west-1'
+      region: ${self:custom.region}
       lambdaHashingVersion: 20201221
       environment:
         SQS_QUEUE_URL: { Ref: ${self:custom.queueName} }
@@ -59,7 +62,7 @@
           handler: handler.catalogBatchProcess
           events:
             - sqs:
-            arn: arn:aws:sqs:region:eu-west-1:${self:custom.queueName}
+            arn: arn:aws:sqs:region:${self:custom.region}:${self:custom.queueName}
             batchSize: 5
 
             # get called every time a message is sent to the queue 
@@ -68,11 +71,31 @@
                   Fn::GetAtt:
                     - ${self:custom.queueName}
                     - Arn
+            # get triggerred for message sent to createProduct Topic
+            - sns:
+              arn: !Ref ${self:custom.queueName}
+              topicName: ${self:custom.queueName}
+              displayName: New product data to create product
+              filterPolicy:
+                blade:
+                  - knife
+                  - dagger
+              redrivePolicy: 
+                deadLetterTargetArn: arn:aws:sqs:${self:custom.region}:11111111111:${self:custom.dlqName}
      
      resources:
       Resources:
         ${self:custom.queueName}:
-          Type: "AWS::SQS::Queue"
+          Type: AWS::SQS::Queue
           Properties:
-            QueueName: ${self:custom.queueName}             
+            QueueName: ${self:custom.queueName}
+        ${self:custom.topicName}:
+          Type: AWS::SNS::Topic
+          Properties:
+            TopicName: ${self:custom.topicName}
+        ${self:custom.dlqName}:
+          Type: AWS::SQS:Queue
+          Poperties: ${self:custom.dlqName}
+
+
 
