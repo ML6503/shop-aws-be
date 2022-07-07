@@ -1,60 +1,59 @@
-   service: import-service-cyprushandmade
+  service: import-service-cyprushandmade
 
-   custom:
-      region: eu-west-1
-      bucketName: import-service-cyprushandmade
-      queueName: catalogItemsQueue
-      topicName: createProductTopic
-      dlqName: productDLQ
+  custom:
+    region: eu-west-1
+    bucketName: import-service-cyprushandmade
+    queueName: catalogItemsQueue
+    topicName: createProductTopic
+    dlqName: productDLQ
 
-   provider:
+  provider:
       name: aws
       runtime: nodejs14.x
       stage: dev 
       region: ${self:custom.region}
       lambdaHashingVersion: 20201221
-      
-      environment:
-        SQS_QUEUE_URL:
-          Ref: SQSQueue
-      
-      resources:
-        Resources:
-          SQSQueue:
-            Type: AWS::SQS::Queue
-            Properties:
-              QueueName: ${self:custom.queueName}
 
-          ProductTopic:
-            Type: AWS::SNS::Topic
-            Properties:
-              TopicName: ${self:custom.topicName}
+  environment:
+    SQS_QUEUE_URL:
+      Ref: SQSQueue
+    
+  resources:
+    Resources:
+      SQSQueue:
+        Type: AWS::SQS::Queue
+        Properties:
+          QueueName: ${self:custom.queueName}
 
-          ${self:custom.dlqName}:
-            Type: AWS::SQS:Queue
-            Poperties:
-              QueueName: ${self:custom.dlqName}
+      ProductTopic:
+        Type: AWS::SNS::Topic
+        Properties:
+          TopicName: ${self:custom.topicName}
 
+      ${self:custom.dlqName}:
+        Type: AWS::SQS:Queue
+        Poperties:
+          QueueName: ${self:custom.dlqName}
 
-      iamRoleStatements:
-         - Effect: "Allow"
-           Action:
-             - "s3:ListBucket"
-           Resource:
-             - arn:aws:s3:::${self:custom.bucketName}
+  iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "s3:ListBucket"
+        Resource:
+          - arn:aws:s3:::${self:custom.bucketName}
 
-         - Effect: "Allow"
-           Action:
-             - "s3:*"
-           Resource:
-             - arn:aws:s3:::${self:custom.bucketName}/*
-         - Effect: Allow
-              Action:
-                - sqs:*
-              Resource:
-                Fn::GetAtt: [ ${self:custom.queueName}, Arn ]
+      - Effect: "Allow"
+        Action:
+          - "s3:*"
+        Resource:
+          - arn:aws:s3:::${self:custom.bucketName}/*
+      - Effect: Allow
+          Action:
+            - sqs:*
+          Resource:
+            Fn::GetAtt: [ ${self:custom.queueName}, Arn ]
 
-   functions:
+  functions:
       importProductsFile:
           handler: handler.importProductsFile
           events:
