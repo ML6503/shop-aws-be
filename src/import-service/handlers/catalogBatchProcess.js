@@ -8,7 +8,7 @@ module.exports.catalogBatchProcess = async (event) => {
     try {
         const snsClient = new SNSClient({ region: process.env.REGION });
         
-        const productService = new ProductService;
+        const productService = new ProductService();
 
         await event.Records.map(({ body }) => {
             // get new product from event and add to Data Base
