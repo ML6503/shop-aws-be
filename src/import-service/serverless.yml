@@ -48,7 +48,6 @@ provider:
           Action:
               - 'sqs:*'
           Resource:
-              #   - arn:aws:sqs:region:${self:custom.region}:${self:custom.queueName}
               - Fn::GetAtt: [SQSQueue, Arn]
 
         - Effect: 'Allow'
@@ -76,6 +75,7 @@ resources:
                 Protocol: email
                 TopicArn:
                     Ref: ProductTopic
+                FilterPolicy: ${file(./filterPolicy.json)}
 
         SNSSubscriptionTitle:
             Type: AWS::SNS::Subscription
@@ -84,15 +84,10 @@ resources:
                 Protocol: email
                 TopicArn:
                     Ref: ProductTopic
-                filterPolicy:
+                FilterPolicy:
                     title:
                         - knife
                         - dagger
-
-        # DLQueue:
-        #   Type: AWS::SQS:Queue
-        #   Properties:
-        #     QueueName: ${self:custom.dlqName}
 
 functions:
     importProductsFile:
@@ -128,7 +123,13 @@ functions:
                       Fn::GetAtt:
                           - SQSQueue
                           - Arn
+            # - sns:
+            #       arn:
+            #         Fn::GetAtt:
+            #               - ProductTopic
+            #               - Arn
+            #       filterPolicy:
+            #         title:
+            #             - knife
+            #             - dagger
 
-            # redrivePolicy:
-            #     # deadLetterTargetArn: arn:aws:sqs:${self:custom.region}:{AWS::AccountId}:DLQueue
-            #     deadLetterTargetRef: DLQueue
