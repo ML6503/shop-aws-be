@@ -77,6 +77,18 @@ resources:
                 TopicArn:
                     Ref: ProductTopic
 
+        SNSSubscriptionTitle:
+            Type: AWS::SNS::Subscription
+            Properties:
+                Endpoint: ml6503@gmail.com
+                Protocol: email
+                TopicArn:
+                    Ref: ProductTopic
+                filterPolicy:
+                    title:
+                        - knife
+                        - dagger
+
         # DLQueue:
         #   Type: AWS::SQS:Queue
         #   Properties:
@@ -116,15 +128,7 @@ functions:
                       Fn::GetAtt:
                           - SQSQueue
                           - Arn
-            # get triggerred for message sent to createProduct Topic
-            # - sns:
-            #     arn: !Ref ProductTopic
-            #     topicName: ${self:custom.topicName}
-            #     displayName: New product data to create product
-            #     filterPolicy:
-            #       title:
-            #         - knife
-            #         - dagger
+
             # redrivePolicy:
             #     # deadLetterTargetArn: arn:aws:sqs:${self:custom.region}:{AWS::AccountId}:DLQueue
             #     deadLetterTargetRef: DLQueue
