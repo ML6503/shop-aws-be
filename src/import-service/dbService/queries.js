@@ -2,9 +2,10 @@ const { INSERT_ONE_PRODUCT, INSERT_ONE_PRODUCT_STOCK } = require('./queryText');
 
 const addProductQuery = (product) => {
     const { title, description, price } = product;
+
     if (
         typeof title !== 'string' ||
-        typeof price !== Number ||
+        typeof +price !== Number ||
         typeof description !== 'string'
     ) {
         throw Error('DB Type param error!');
@@ -12,18 +13,18 @@ const addProductQuery = (product) => {
 
     return {
         text: INSERT_ONE_PRODUCT,
-        value: [`${title}`, `${description}`, price],
+        value: [`${title}`, `${description}`, +price],
     };
 };
 
 const addProductStock = (productId, count) => {
-    if (typeof productId !== 'string' || typeof count !== Number) {
+    if (typeof productId !== 'string' || typeof +count !== Number) {
         throw Error('DB Type param error!');
     }
 
     return {
         text: INSERT_ONE_PRODUCT_STOCK,
-        value: [`${productId}`, count],
+        value: [`${productId}`, +count],
     };
 };
 

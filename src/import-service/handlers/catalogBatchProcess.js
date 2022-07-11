@@ -4,6 +4,7 @@ const { unhandledErrorCatch } = require('../common/error');
 import ProductService from '../dbService/productService';
 
 module.exports.catalogBatchProcess = async (event) => {
+    console.log('We are in BatchProcess!!');
     try {
         const snsClient = new SNSClient({ region: process.env.REGION });
         
@@ -12,6 +13,7 @@ module.exports.catalogBatchProcess = async (event) => {
         await event.Records.map(({ body }) => {
             // get new product from event and add to Data Base
             let newProduct = await JSON.parse(body);
+            console.log('NEW PRODUCT DATA FROM BODY', newProduct);
 
             let addedProduct = await productService.addProduct(newProduct);
    
