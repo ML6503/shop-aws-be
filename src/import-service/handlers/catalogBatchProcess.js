@@ -1,7 +1,8 @@
 const { SNSClient, PublishCommand } = require('@aws-sdk/client-sns');
 const { ACCEPTED } = require('http-status');
 const { unhandledErrorCatch } = require('../common/error');
-import ProductService from '../dbService/productService';
+const { ProductService } = require('../dbService/productService');
+
 
 module.exports.catalogBatchProcess = async (event) => {
     console.log('We are in BatchProcess!!');
@@ -10,7 +11,7 @@ module.exports.catalogBatchProcess = async (event) => {
         
         const productService = new ProductService();
 
-        await event.Records.map(({ body }) => {
+        await event.Records.map(async ({ body }) => {
             // get new product from event and add to Data Base
             let newProduct = await JSON.parse(body);
             console.log('NEW PRODUCT DATA FROM BODY', newProduct);

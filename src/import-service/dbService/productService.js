@@ -1,5 +1,5 @@
 const { Client } = require('pg');
-const dbOptions = require('./dbOptions');
+const { dbOptions } = require('./dbOptions');
 const { addProductQuery, addProductStock } = require('./queries');
 const {
     UUID,
@@ -7,7 +7,7 @@ const {
     CREATE_TABLE_STOCK,
 } = require('./queryText');
 
-export default class ProductService {
+class ProductService {
     constructor() {
         this.client = new Client(dbOptions);
         this.productsWithStock = [];
@@ -27,6 +27,7 @@ export default class ProductService {
 
     async createDB() {
         try {
+            this.connect();
             await this.client.query(UUID);
 
             await this.client.query(CREATE_TABLE_PRODUCT);
@@ -42,8 +43,16 @@ export default class ProductService {
     async addProduct(product) {
         try {
             this.connect();
+            // this.client.connect((err) => {
+            //     if (err) {
+            //         console.error(err.stack);
+            //         throw Error(`connection error: ${err.stack} `);
+            //     } else {
+            //         console.log('DB connected');
+            //     }
+            // });
             await this.client.query('BEGIN');
-
+            console.log('DB INCOMING PRODUCT!!',product );
             const queryAddProduct = addProductQuery(product);
             const res = await this.client.query(
                 queryAddProduct.text,
@@ -68,7 +77,7 @@ export default class ProductService {
             );
 
             const newProduct = resultQueryGetProduct.rows[0];
-
+            console.log('DB NEW PRODUCT!',newProduct );
             await this.client.query('COMMIT');
             return newProduct;
         } catch (err) {
@@ -79,3 +88,7 @@ export default class ProductService {
         }
     }
 }
+
+module.exports = {
+    ProductService
+};

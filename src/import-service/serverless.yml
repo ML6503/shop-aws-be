@@ -75,7 +75,7 @@ resources:
                 Protocol: email
                 TopicArn:
                     Ref: ProductTopic
-                FilterPolicy: ${file(./filterPolicy.json)}
+                # FilterPolicy: ${file(./filterPolicy.json)}
 
         SNSSubscriptionTitle:
             Type: AWS::SNS::Subscription

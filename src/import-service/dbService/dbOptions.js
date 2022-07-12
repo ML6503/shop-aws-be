@@ -12,4 +12,6 @@ const dbOptions = {
     connectionTimeoutMillis: 10000, // time to terminate DB query in milliseconds
 };
 
-export default dbOptions;
+module.exports = {
+    dbOptions
+};
