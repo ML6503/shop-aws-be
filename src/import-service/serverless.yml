@@ -75,7 +75,6 @@ resources:
                 Protocol: email
                 TopicArn:
                     Ref: ProductTopic
-                # FilterPolicy: ${file(./filterPolicy.json)}
 
         SNSSubscriptionTitle:
             Type: AWS::SNS::Subscription
@@ -123,13 +122,3 @@ functions:
                       Fn::GetAtt:
                           - SQSQueue
                           - Arn
-            # - sns:
-            #       arn:
-            #         Fn::GetAtt:
-            #               - ProductTopic
-            #               - Arn
-            #       filterPolicy:
-            #         title:
-            #             - knife
-            #             - dagger
-
