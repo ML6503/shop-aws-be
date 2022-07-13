@@ -3,6 +3,7 @@ useDotenv: true
 plugins:
     - serverless-dotenv-plugin
     - serverless-offline
+    - serverless-esbuild
 
 custom:
     region: ${env:REGION}
@@ -12,6 +13,15 @@ custom:
     dlqName: productDLQ
     dotenv:
         path: ./.env
+    esbuild:
+        bundle: true
+        minify: false
+        sourcemap: true
+        exclude:
+            - aws-sdk
+        target: node14
+        platform: node
+        concurrency: 10
 
 provider:
     name: aws

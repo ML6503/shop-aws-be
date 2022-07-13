@@ -1,5 +1,5 @@
 const { SNSClient, PublishCommand } = require('@aws-sdk/client-sns');
-const { AlexaForBusiness } = require('aws-sdk');
+const axios = require('axios');
 const AWS = require('aws-sdk');
 const { ACCEPTED, OK } = require('http-status');
 const { unhandledErrorCatch } = require('../common/error');
@@ -10,16 +10,17 @@ const lambda = new AWS.Lambda();
 
 module.exports.catalogBatchProcess = async (event, context) => {
     console.log('We are in BatchProcess!!');
-    try {
-        // const productService = new ProductService();
 
-        await event.Records.map(async ({ body }) => {
+    // const productService = new ProductService();
+
+    await event.Records.map(async ({ body }) => {
+        try {
             // get new product from event and add to Data Base
             // let newProduct = await JSON.parse(body);
             // console.log('NEW PRODUCT DATA FROM BODY', newProduct);
             console.log('NEW PRODUCT DATA FROM BODY', body);
 
-            const addProduct = await axios.post(
+            let addProduct = await axios.post(
                 `https://rxqgzhje6j.execute-api.eu-west-1.amazonaws.com/dev/products`,
                 body,
                 {
@@ -35,7 +36,7 @@ module.exports.catalogBatchProcess = async (event, context) => {
 
             // let addedProduct = await productService.addProduct(newProduct);
 
-            // console.log('addedProduct ', addedProduct);
+            console.log('addedProduct ', addProduct);
 
             if (addProduct.statusCode === OK) {
                 const addedProduct = await JSON.parse(body);
@@ -55,10 +56,10 @@ module.exports.catalogBatchProcess = async (event, context) => {
 
                 await snsClient.send(publishCommand);
             }
-        });
-    } catch (err) {
-        console.error(err);
-    }
+        } catch (err) {
+            console.error(err);
+        }
+    });
 
     unhandledErrorCatch();
 

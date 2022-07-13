@@ -23,6 +23,8 @@
     },
     "devDependencies": {
         "aws-sdk-mock": "^5.7.0",
-        "jest": "^28.1.2"
+        "esbuild": "^0.14.49",
+        "jest": "^28.1.2",
+        "serverless-esbuild": "^1.31.0"
     }
 }
