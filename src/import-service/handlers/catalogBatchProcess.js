@@ -1,6 +1,6 @@
 const { SNSClient, PublishCommand } = require('@aws-sdk/client-sns');
 const axios = require('axios');
-const { OK } = require('http-status');
+const { OK, ACCEPTED } = require('http-status');
 const { ACCESS_HEADERS } = require('../common/constants');
 const { unhandledErrorCatch } = require('../common/error');
 
@@ -46,4 +46,9 @@ module.exports.catalogBatchProcess = async (event) => {
     };
 
     unhandledErrorCatch();
+
+    return {
+        headers: ACCESS_HEADERS,
+        statusCode: ACCEPTED,
+    }
 };
