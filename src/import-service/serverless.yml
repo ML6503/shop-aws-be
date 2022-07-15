@@ -35,16 +35,16 @@ provider:
             Ref: SQSQueue
         SNS_ARN:
             Ref: ProductTopic
-        PG_HOST: process.env.PG_HOST
-        PG_PORT: process.env.PG_PORT
-        PG_DATABASE: process.env.PG_DATABASE
-        PG_USERNAME: process.env.PG_USERNAME
-        PG_PASSWORD: process.env.PG_PASSWORD
+        # PG_HOST: process.env.PG_HOST
+        # PG_PORT: process.env.PG_PORT
+        # PG_DATABASE: process.env.PG_DATABASE
+        # PG_USERNAME: process.env.PG_USERNAME
+        # PG_PASSWORD: process.env.PG_PASSWORD
 
     iamRoleStatements:
         - Effect: 'Allow'
           Action:
-             - 's3:PutObject'
+              - 's3:PutObject'
           Resource:
               - arn:aws:s3:::${self:custom.bucketName}
 
