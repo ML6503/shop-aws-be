@@ -50,9 +50,6 @@ module.exports.importFileParser = async (event, _context, callback) => {
             },
             null
         );
-        // return {
-        //     statusCode: NOT_FOUND
-        // }
     }
 
     try {
@@ -61,7 +58,7 @@ module.exports.importFileParser = async (event, _context, callback) => {
                 Bucket: BUCKET,
                 Key: record.s3.object.key,
             };
-            // console.log('Uploaded File KEY: ', record.s3.object.key);
+
             const parsedParams = {
                 Bucket: BUCKET,
                 CopySource: BUCKET + '/' + record.s3.object.key,
@@ -101,39 +98,6 @@ module.exports.importFileParser = async (event, _context, callback) => {
                         null
                     );
                 });
-
-            // const readStream = s3.getObject(uploadedParams).createReadStream();
-
-            // await new Promise((resolve, reject) => {
-            //     readStream
-            //         .pipe(csv())
-            //         .on('data', (data) => {
-            //             console.log('FILE DATA after PIPE csv: ', data);
-            //             results.push(data);
-            //         })
-            //         .on('error', (error) => {
-            //             reject(error);
-            //         })
-            //         .on('end', async () => {
-            //             console.log('Resuls from stream: ', results);
-            //             results.forEach((fileData) => {
-            //                 sendMessage(fileData);
-            //                 console.log('Data from file: ', fileData);
-            //             });
-
-            //             await s3.copyObject(parsedParams).promise();
-
-            //             await s3.deleteObject(uploadedParams).promise();
-
-            //             resolve(() => {
-            //                 console.log(
-            //                     `File ${
-            //                         record.s3.object.key.split('/')[1]
-            //                     } has been imported & parsed`
-            //                 );
-            //             });
-            //         });
-            // });
 
             callback(null, {
                 headers: ACCESS_HEADERS,

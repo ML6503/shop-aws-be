@@ -5,18 +5,17 @@ const { ACCESS_HEADERS } = require('../common/constants');
 const { unhandledErrorCatch } = require('../common/error');
 
 module.exports.catalogBatchProcess = async (event) => {
-    console.log('We are in BatchProcess!!');
     const snsClient = new SNSClient({ region: process.env.REGION });
 
-        for(const record of event.Records) {
+    for (const record of event.Records) {
         try {
             // get new product from event and add to Data Base
-           
+
             const addProductResponse = await axios.post(
                 'https://rxqgzhje6j.execute-api.eu-west-1.amazonaws.com/dev/products',
                 JSON.parse(record.body),
                 {
-                    headers: ACCESS_HEADERS
+                    headers: ACCESS_HEADERS,
                 }
             );
 
@@ -30,9 +29,11 @@ module.exports.catalogBatchProcess = async (event) => {
                     MessageAttributes: {
                         title: {
                             DataType: 'String',
-                            StringValue: addedProduct.title.includes('Dagger') 
-                                            ? 'dagger' : addedProduct.title.includes('Knife')
-                                            ? 'knife' : `${addedProduct.title}`
+                            StringValue: addedProduct.title.includes('Dagger')
+                                ? 'dagger'
+                                : addedProduct.title.includes('Knife')
+                                ? 'knife'
+                                : `${addedProduct.title}`,
                         },
                     },
                 };
@@ -43,12 +44,12 @@ module.exports.catalogBatchProcess = async (event) => {
         } catch (err) {
             console.error(err);
         }
-    };
+    }
 
     unhandledErrorCatch();
 
     return {
         headers: ACCESS_HEADERS,
         statusCode: ACCEPTED,
-    }
+    };
 };
