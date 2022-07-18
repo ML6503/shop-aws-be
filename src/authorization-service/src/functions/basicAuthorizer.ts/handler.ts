@@ -1,13 +1,19 @@
-import type { ValidatedEventAPIGatewayProxyEvent } from '@libs/api-gateway';
+import { formatJSONUnauthResponse, ValidatedEventAPIGatewayProxyEvent } from '@libs/api-gateway';
 import { formatJSONResponse } from '@libs/api-gateway';
 import { middyfy } from '@libs/lambda';
 
 import schema from './schema';
 
 const basicAuthorizer: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
+  if (event['type'] !== 'token') {
+    return formatJSONUnauthResponse({
+      message: 'User is unauthorized'
+    });
+
+  }
   return formatJSONResponse({
-    message: `Hello ${event.body.name}, welcome to the exciting Serverless world!`,
-    event,
+    message: `Authorized!`,
+    
   });
 };
 

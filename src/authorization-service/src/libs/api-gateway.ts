@@ -9,4 +9,18 @@ export const formatJSONResponse = (response: Record<string, unknown>) => {
     statusCode: 200,
     body: JSON.stringify(response)
   }
-}
+};
+
+export const formatJSONUnauthResponse = (response: Record<string, unknown>) => {
+  return {
+    statusCode: 401,
+    body: JSON.stringify(response)
+  }
+};
+
+export const formatJSONForbiddenResponse = (response: Record<string, unknown>) => {
+  return {
+    statusCode: 403,
+    body: JSON.stringify(response)
+  }
+};
