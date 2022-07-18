@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": "../authorization-service",
+    "paths": {
+      "@functions/*": ["./src/functions/*"],
+      "@libs/*": ["./src/libs/*"],
+      "src/*": ["./src/*"]
+    }
+  }
+}
