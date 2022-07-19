@@ -1,103 +1,143 @@
-import { v4 as uuidv4 } from 'uuid';
-import { IProduct, INewProduct } from "src/types/product";
-
-// to mock time to wait reply from DB
-const sleep = (ms: number) => {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-
+import { Client } from 'pg';
+import { IProduct, INewProduct, IProductWzStock } from "src/types/product";
+import { dbOptions } from './pg-utils';
+import { getOneProductWzStock, addProductQuery, addProductStock, deleteProductAndStock, updateProductTitle, updateProductDescr, updateProductPrice, updateProductStock } from './pg-utils/queries';
+import { SELECT_ALL_PRODUCTS_JOIN_STOCK } from './pg-utils/queryText';
 export default class ProductService {
-    private productDB: IProduct[] = [
-        {
-            id: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
-            title: 'Custom knife',
-            description: 'Cobra movie replica',
-            price: 123,
-            count: 1
-        },
-        {
-            id: '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed',
-            title: 'Knife Damascus',
-            description: 'Damscus steel VG10',
-            price: 230,
-            count: 3 
-        },
-        {
-            id: '1b9d6bcd-bafd-4b2d-9b5d-ab8dfbbd4bed',
-            title: 'Hunting Knife',
-            description: 'Knife made of steel N690',
-            price: 80,
-            count: 10 
-        },
-        {
-            id: '1b9d6bcd-bbfd-4b2d-9b8d-ab8dfbbd4bed',
-            title: 'War Axe',
-            description: 'Double sided axe',
-            price: 310,
-            count: 1
-        },
-        {
-            id: '1b9d6bcd-bbfd-4b2d-9b8d-ab8dfbbd4bex',
-            title: 'Tanto knife',
-            description: 'Japanese style knife',
-            price: 500,
-            count: 2
-        },
-        {
-            id: '5e9d6bcd-bbfd-4b2d-9b8d-ab8dfbbd4bex',
-            title: 'Sword cane',
-            description: 'Woden cane with hidden N690 steel blade',
-            price: 520,
-            count: 1
-        },
-    ];
 
-    constructor() {}
+   private readonly client: Client;
+   public productsWithStock: Array<IProductWzStock> | [];
+   public singleProduct: IProductWzStock;
 
-    async getAllProducts(): Promise<IProduct[]> {
-        
-        await sleep(1000);
-        return this.productDB;
+    constructor() {
+        this.client = new Client(dbOptions);    
+        this.productsWithStock = [];
+        this.singleProduct;
     }
 
-    async getProductById(productId: string): Promise<IProduct> {
-        
-        await sleep(1000);
-        const singleProduct =  this.productDB.filter(p => p.id === productId)[0];
-        return singleProduct;
+    connect (): void {
+        this.client.connect(err => {
+            if (err) {
+                console.error(err.stack);  
+                throw Error(`connection error: ${err.stack} `);
+            } else {
+              console.log('DB connected')
+            }
+          });
     }
 
-    async addProduct(product: INewProduct): Promise<IProduct[]> {
-        
-        // await sleep(1000);
-        const newProduct : IProduct = {id: uuidv4(), ...product};
+       async getAllProductsWzStock(): Promise<IProductWzStock[]> {
+       
+        try {
+            this.connect();
+            const res = await this.client.query(SELECT_ALL_PRODUCTS_JOIN_STOCK);       
+            this.productsWithStock = res.rows;
+         
+             return this.productsWithStock;
+ 
+        } catch (err) {
+            console.error(err.stack);   
+        } finally {
+             this.client.end();
+        }
+    }
 
-        this.productDB.push(newProduct);
-        const newProductList = await this.getAllProducts();
-        return newProductList;
+    async getProductById(productId: string): Promise<IProductWzStock> {    
+            
+        try {
+            this.connect();
+
+            const queryGetProduct = getOneProductWzStock(productId);
+            const res = await this.client.query(queryGetProduct.text, queryGetProduct.value);     
+            
+            this.singleProduct = res.rows[0];    
+            return this.singleProduct;
+    
+        } catch (err) {
+            console.error(err.stack);   
+        } finally {
+            this.client.end();
+        }       
+    }
+
+    async addProduct(product: INewProduct): Promise<IProductWzStock> {
+       
+        try {
+            this.connect();
+            await this.client.query('BEGIN');
+
+            const queryAddProduct = addProductQuery(product);
+            const res = await this.client.query(queryAddProduct.text, queryAddProduct.value );
+           
+            const newCreatedProduct = res.rows[0];
+            
+            const queryNewProductStock = addProductStock(newCreatedProduct.id, product.count);
+            await this.client.query(queryNewProductStock.text, queryNewProductStock.value);
+           
+            const queryGetProduct = getOneProductWzStock(newCreatedProduct.id);
+            const resultQueryGetProduct = await this.client.query(queryGetProduct.text, queryGetProduct.value);     
+            
+            const newProduct = resultQueryGetProduct.rows[0];
+            
+            await this.client.query('COMMIT');
+            return  newProduct;    
+    
+          } catch (err) {    
+                await this.client.query('ROLLBACK');
+                throw err;
+
+          } finally {
+            await this.client.end();
+          }
     }
 
     async deleteProductById(productId: string): Promise<IProduct[]> {        
-     
-        this.productDB.filter(p => p.id !== productId);
-        const newProductList = await this.getAllProducts();
-        return newProductList;
+        try {
+            this.connect();
+            
+            const queryDeleteProduct =  deleteProductAndStock(productId);
+            await this.client.query(queryDeleteProduct.text, queryDeleteProduct.value);
+    
+            this.productsWithStock = await this.getAllProductsWzStock();
+            return this.productsWithStock;
+        } catch (err) {
+            console.error(err.stack);
+        } finally {
+            this.client.end();
+        }
     }
 
-    async updateProduct(productId: string, product: Partial<IProduct>): Promise<IProduct[]> {
-        const updatedProduct = await this.getProductById(productId);
-        const { title, description, price } = product;
-        if(title) {
-            updatedProduct.title = title;
-        } if(description) {
-            updatedProduct.description = description;
-        } if (price) {
-            updatedProduct.price = price;
+    async updateProduct(productId: string, product: Partial<IProductWzStock>): Promise<IProductWzStock> {     
+        const { title, description, price, count } = product;  
+        try {
+            this.connect();
+        if (title) {
+            const queryUpdateProductTitle = updateProductTitle(productId, title)
+            await this.client.query( queryUpdateProductTitle.text, queryUpdateProductTitle.value);
+
+        } if (description) {
+            const queryUpdateProductDescr = updateProductDescr(productId, description);
+            await this.client.query( queryUpdateProductDescr.text, queryUpdateProductDescr.value);
+
+        } if (price) {            
+            const queryUpdateProductPrice = updateProductPrice(productId, price);
+            await this.client.query( queryUpdateProductPrice.text, queryUpdateProductPrice.value);
+
+        } if (count) {  
+
+            const queryUpdateProductStock = updateProductStock(productId, count);
+            await this.client.query(queryUpdateProductStock.text, queryUpdateProductStock.value);
         }
         
-        this.productDB.map(p => p.id === productId ? p = updatedProduct : p);
-        const newProductList = await this.getAllProducts();
-        return newProductList;
+        const resultedProduct = await this.getProductById(productId);
+       
+        return resultedProduct;
+
+        } catch (err) {
+            console.error(err.stack);
+
+        } finally {
+            this.client.end();
+        }
     }
 }

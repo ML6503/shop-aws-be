@@ -1,4 +1,4 @@
-export { default as hello } from './hello';
+export { default as addProduct } from './addProduct';
 
 export { default as getProductsList } from './getProductsList';
 

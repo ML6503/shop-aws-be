@@ -7,7 +7,10 @@
     "test": "jest",
     "compile": "tsc",
     "offline": "sls offline --noPrependStageInUrl",
-    "log": "serverless logs -f <functionName>"
+    "log": "serverless logs -f <functionName>",
+    "invoke:getProductsList": "sls invoke local --function getProductsList",
+    "invoke:getProductsById": "sls invoke local --function getProductsById --data {  pathParameters: { productId: 'cfe11cdb-3db5-42f0-95ad-7f06601672a0' }}",
+    "deploy": "sls deploy"
   },
   "engines": {
     "node": ">=14.15.0"
@@ -15,6 +18,8 @@
   "dependencies": {
     "@middy/core": "^2.5.3",
     "@middy/http-json-body-parser": "^2.5.3",
+    "dotenv": "^16.0.1",
+    "pg": "^8.7.3",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
@@ -22,6 +27,7 @@
     "@types/aws-lambda": "^8.10.71",
     "@types/jest": "^28.1.1",
     "@types/node": "^14.14.25",
+    "@types/pg": "^8.6.5",
     "@types/uuid": "^8.3.4",
     "esbuild": "^0.14.11",
     "jest": "^28.1.1",

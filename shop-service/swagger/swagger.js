@@ -22,11 +22,34 @@
           "200": {
             "description": "all products received successfully",
             "schema": {
-              "$ref": "#/definitions/IProducts"
+              "$ref": "#/definitions/function"
             }
           },
           "400": {
             "description": "Bad request. Product not found"
+          }
+        }
+      },
+      "post": {
+        "summary": "addProduct",
+        "description": "",
+        "operationId": "addProduct.post.products",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Product created successfully",
+            "schema": {
+              "$ref": "#/definitions/{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"},\"title\":{\"type\":\"string\"},\"description\":{\"type\":\"string\"},\"price\":{\"type\":\"number\"},\"count\":{\"type\":\"number\"}}}"
+            }
+          },
+          "400": {
+            "description": "Bad request."
           }
         }
       }
@@ -85,21 +108,30 @@
         "price": {
           "title": "IProduct.price",
           "type": "number"
-        },
-        "count": {
-          "title": "IProduct.count",
-          "type": "number"
         }
       },
       "required": [
         "id",
         "title",
         "description",
-        "price",
-        "count"
+        "price"
       ],
       "additionalProperties": false,
       "title": "IProduct",
+      "type": "object"
+    },
+    "IProductWzStock": {
+      "properties": {
+        "count": {
+          "title": "IProductWzStock.count",
+          "type": "number"
+        }
+      },
+      "required": [
+        "count"
+      ],
+      "additionalProperties": false,
+      "title": "IProductWzStock",
       "type": "object"
     },
     "INewProduct": {
