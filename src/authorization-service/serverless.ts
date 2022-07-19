@@ -12,6 +12,10 @@ const serverlessConfiguration: AWS = {
   provider: {
     name: 'aws',
     runtime: 'nodejs14.x',
+    region: 'eu-west-1',
+    httpApi: {
+      cors: true
+    }, 
     apiGateway: {
       minimumCompressionSize: 1024,
       shouldStartNameWithService: true,
