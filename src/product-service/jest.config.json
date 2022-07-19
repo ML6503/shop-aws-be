@@ -1,0 +1,17 @@
+ {
+   "roots": ["<rootDir>"],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.ts?$",
+    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"],
+    "moduleDirectories": ["node_modules", "src-product"],
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "@functions/*": "<rootDir>/src-product/functions/$",
+      "@libs/api-gateway": "<rootDir>/src-product/libs/api-gateway",
+      "@libs/lambda": "<rootDir>/src-product/libs/lambda",
+      "src-product/(.*)": "<rootDir>/src-product/$1"
+    }
+     
+  }

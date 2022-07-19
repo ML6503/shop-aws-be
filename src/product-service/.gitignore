@@ -1,0 +1,25 @@
+# package directories
+node_modules
+jspm_packages
+
+# Serverless folder
+
+.serverless
+
+# esbuild directories
+.esbuild
+
+# Webpack directories
+.webpack
+
+build
+
+
+# Compiled Code
+dist
+
+# Tests
+tests
+
+# env
+.env

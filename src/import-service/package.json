@@ -1,0 +1,19 @@
+{
+    "name": "product-service",
+    "type": "commonjs",
+    "scripts": {
+        "test": "jest",
+        "offline": "sls offline --noPrependStageInUrl",
+        "log:import": "serverless logs -f  importProductsFile",
+        "invoke:importProductsFile": "sls invoke local --function importProductsFile",
+        "invoke:importFileParser": "sls invoke local --function importFileParser",
+        "deploy": "sls deploy"
+    },
+    "dependencies": {
+        "@aws-sdk/client-s3": "^3.121.0",
+        "@aws-sdk/s3-presigned-post": "^3.121.0",
+        "aws-sdk": "^2.1167.0",
+        "csv-parser": "^3.0.0",
+        "http-status": "^1.5.2"
+    }
+}
