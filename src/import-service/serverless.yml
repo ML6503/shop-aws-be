@@ -1,47 +1,134 @@
-   service: import-service-cyprushandmade
+service: import-service-cyprushandmade
+useDotenv: true
+plugins:
+    - serverless-dotenv-plugin
+    - serverless-offline
+    - serverless-esbuild
 
-   custom:
-      bucketName: import-service-cyprushandmade
+custom:
+    region: ${env:REGION}
+    bucketName: import-service-cyprushandmade
+    queueName: catalogItemsQueue
+    topicName: createProductTopic
+    dlqName: productDLQ
+    dotenv:
+        path: ./.env
+    esbuild:
+        bundle: true
+        minify: false
+        sourcemap: true
+        exclude:
+            - aws-sdk
+        target: node14
+        platform: node
+        concurrency: 10
 
-   provider:
-      name: aws
-      runtime: nodejs14.x
-      stage: dev 
-      region: 'eu-west-1'
-      lambdaHashingVersion: 20201221
+provider:
+    name: aws
+    runtime: nodejs14.x
+    stage: dev
+    region: ${self:custom.region}
+    lambdaHashingVersion: 20201221
 
-      iamRoleStatements:
-         - Effect: "Allow"
-           Action:
-             - "s3:ListBucket"
-           Resource:
-             - arn:aws:s3:::${self:custom.bucketName}
+    environment:
+        SQS_QUEUE_URL:
+            Ref: SQSQueue
+        SNS_ARN:
+            Ref: ProductTopic
+        # PG_HOST: process.env.PG_HOST
+        # PG_PORT: process.env.PG_PORT
+        # PG_DATABASE: process.env.PG_DATABASE
+        # PG_USERNAME: process.env.PG_USERNAME
+        # PG_PASSWORD: process.env.PG_PASSWORD
 
-         - Effect: "Allow"
-           Action:
-             - "s3:*"
-           Resource:
-             - arn:aws:s3:::${self:custom.bucketName}/*
+    iamRoleStatements:
+        - Effect: 'Allow'
+          Action:
+              - 's3:PutObject'
+          Resource:
+              - arn:aws:s3:::${self:custom.bucketName}
 
-   functions:
-      importProductsFile:
-          handler: handlers/importProductsFile.importProductsFile
-          events:
+        - Effect: 'Allow'
+          Action:
+              - 's3:*'
+          Resource:
+              - arn:aws:s3:::${self:custom.bucketName}/*
+
+        - Effect: 'Allow'
+          Action:
+              - 'sqs:*'
+          Resource:
+              - Fn::GetAtt: [SQSQueue, Arn]
+
+        - Effect: 'Allow'
+          Action:
+              - 'sns:*'
+          Resource:
+              Ref: ProductTopic
+
+resources:
+    Resources:
+        SQSQueue:
+            Type: AWS::SQS::Queue
+            Properties:
+                QueueName: ${self:custom.queueName}
+
+        ProductTopic:
+            Type: AWS::SNS::Topic
+            Properties:
+                TopicName: ${self:custom.topicName}
+
+        SNSSubscription:
+            Type: AWS::SNS::Subscription
+            Properties:
+                Endpoint: arethel@mail.ru
+                Protocol: email
+                TopicArn:
+                    Ref: ProductTopic
+
+        SNSSubscriptionTitle:
+            Type: AWS::SNS::Subscription
+            Properties:
+                Endpoint: ml6503@gmail.com
+                Protocol: email
+                TopicArn:
+                    Ref: ProductTopic
+                FilterPolicy:
+                    title:
+                        - knife
+                        - dagger
+
+functions:
+    importProductsFile:
+        handler: handler.importProductsFile
+        events:
             - http:
-                method: get
-                path: import
-                cors: true
-                request:
-                  parameters:
-                    querystrings:
-                      name: true
+                  method: get
+                  path: import
+                  cors: true
+                  request:
+                      parameters:
+                          querystrings:
+                              name: true
 
-      importFileParser:
-          handler: handlers/importFileParser.importFileParser
-          events:
+    importFileParser:
+        handler: handler.importFileParser
+        events:
             - s3:
-                bucket: import-service-cyprushandmade
-                event: s3:ObjectCreated:*
-                rules:
-                    - prefix: uploaded/
-                existing: true
+                  bucket: import-service-cyprushandmade
+                  event: s3:ObjectCreated:*
+                  rules:
+                      - prefix: uploaded/
+                      - suffix: .csv
+                  existing: true
+
+    catalogBatchProcess:
+        handler: handler.catalogBatchProcess
+        events:
+            # get called every time a message is sent to the queue
+            - sqs:
+                  batchSize: 5
+                  arn:
+                      Fn::GetAtt:
+                          - SQSQueue
+                          - Arn

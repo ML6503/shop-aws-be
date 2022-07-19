@@ -3,17 +3,28 @@
     "type": "commonjs",
     "scripts": {
         "test": "jest",
-        "offline": "sls offline --noPrependStageInUrl",
         "log:import": "serverless logs -f  importProductsFile",
-        "invoke:importProductsFile": "sls invoke local --function importProductsFile",
-        "invoke:importFileParser": "sls invoke local --function importFileParser",
-        "deploy": "sls deploy"
+        "log:parser": "serverless logs -f  importFileParser",
+        "deploy": "sls deploy",
+        "offline": "sls offline --noPrependStageInUrl"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.121.0",
-        "@aws-sdk/s3-presigned-post": "^3.121.0",
+        "@aws-sdk/client-sns": "^3.121.0",
         "aws-sdk": "^2.1167.0",
+        "axios": "^0.27.2",
         "csv-parser": "^3.0.0",
-        "http-status": "^1.5.2"
+        "http-status": "^1.5.2",
+        "pg": "^8.7.3",
+        "prettier": "^2.7.1",
+        "serverless-dotenv-plugin": "^4.0.1",
+        "serverless-offline": "^8.8.1",
+        "uuid": "^8.3.2"
+    },
+    "devDependencies": {
+        "aws-sdk-mock": "^5.7.0",
+        "esbuild": "^0.14.49",
+        "jest": "^28.1.2",
+        "serverless-esbuild": "^1.31.0"
     }
 }

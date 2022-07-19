@@ -3,7 +3,8 @@
     "baseUrl": "../product-service/",
     "paths": {
       "@functions/*": ["./src-product/functions/*"],
-      "@libs/*": ["./src-product/libs/*"]
+      "@libs/*": ["./src-product/libs/*"],
+      "src-product/*": ["./src-product/*"]
     }
   }
 }

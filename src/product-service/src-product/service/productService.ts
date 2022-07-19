@@ -3,6 +3,7 @@ import { IProduct, INewProduct, IProductWzStock } from "../types/product";
 import { dbOptions } from './pg-utils';
 import { getOneProductWzStock, addProductQuery, addProductStock, deleteProductAndStock, updateProductTitle, updateProductDescr, updateProductPrice, updateProductStock } from './pg-utils/queries';
 import { SELECT_ALL_PRODUCTS_JOIN_STOCK } from './pg-utils/queryText';
+
 export default class ProductService {
 
    private readonly client: Client;
@@ -26,7 +27,36 @@ export default class ProductService {
           });
     }
 
-       async getAllProductsWzStock(): Promise<IProductWzStock[]> {
+    async createDB (): Promise<void> {
+        const UUID = `CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+        const CREATE_TABLE_PRODUCT = `create table IF NOT EXISTS "product" (
+            "id" uuid not null DEFAULT uuid_generate_v4 () PRIMARY KEY,
+            "title" text not null unique,
+            "description" text,
+            "price" integer
+            )`;
+        
+        const CREATE_TABLE_STOCK = `create table IF NOT EXISTS "stocks" (
+            "product_id" uuid references product("id"),
+            "count" integer
+            )`;
+
+        try {
+            await this.client.query(UUID);
+
+            await this.client.query(CREATE_TABLE_PRODUCT);
+
+            await this.client.query(CREATE_TABLE_STOCK);
+
+        } catch (err) {
+            console.error(err.stack);
+               
+        } finally {
+            this.client.end();
+        }
+    }
+
+    async getAllProductsWzStock(): Promise<IProductWzStock[]> {
        
         try {
             this.connect();

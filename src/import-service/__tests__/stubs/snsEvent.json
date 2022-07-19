@@ -1,0 +1,15 @@
+{
+    "Records": [
+        {
+            "messageId": "90a903f5-a6fe-4073-8e62-2aa10c2e9fd0",
+            "receiptHandle": "AQEBTj5YSoER5Sul3V3BcfPZMHpYBEYhhby+gG32XlRLIZT+a+3KrKRBPORglj9VY9bNENhLenqPkKu7DYHIhos3Fm2sLsSQ7QDqVGAFn4eorw0K5r4FVLF2ole6T6nzbfoquZkS/p67Xi7lvHEqy53xHw7XX+Ch2bg0X2yD4ulW9KH+YQYvC+kH+/Sjtt/gRpLSV6h1QlLxvnfjMC8yIUHU0qAeiubKcBBJpgulhoD+qnkPLZDXi6vi6qO6ffr8Z0DqTpd1n6JY05Pqr+lpSB/TBKEIampsZqsFvqyqto132UYLdZ/s40wu64m51DqqDtaaAxtFzaT4l6leG90whsoZzHDvEfZl8kFfvxpa9F/1yoHsksOhu1ppS9h0OU2gjX6HKBB7GVFrHhFi5tSLbxeqkA==",
+            "body": "{'title':'Dagger','description':'Dagger damascus','price':'100','count':'10'}",
+            "attributes": [],
+            "messageAttributes": {},
+            "md5OfBody": "8fade50ca711b27dcfe233e923fe06cd",
+            "eventSource": "aws:sqs",
+            "eventSourceARN": "arn:aws:sqs:eu-west-1:878430204735:catalogItemsQueue",
+            "awsRegion": "eu-west-1"
+        }
+    ]
+}
