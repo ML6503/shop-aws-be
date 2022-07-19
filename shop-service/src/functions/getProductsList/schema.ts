@@ -1,7 +1,7 @@
 export default {
-  type: "object",
+  type: "application/json",
   properties: {
-    name: { type: 'string' }
+    products: { type: 'array' }
   },
-  required: ['name']
+  required: ['products']
 } as const;

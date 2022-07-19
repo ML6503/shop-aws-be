@@ -6,16 +6,19 @@ export default {
     {
       http: {
         method: 'get',
-        path: 'products',
+        path: 'products/{productId}',
         responses: {
           200: {
-            description: 'all products received successfully',
-            bodyType: 'IProducts'
+            description: 'Product received successfully',
+            bodyType: 'IProduct'
+          },
+          404: {
+            description: 'Product not found'
           },
           400: {
             description: 'Bad request. Product not found'
           }
-        }
+        } 
       },
     },
   ],
