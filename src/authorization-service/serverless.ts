@@ -2,6 +2,7 @@ import type { AWS } from '@serverless/typescript';
 
 import basicAuthorizer from '@functions/basicAuthorizer.ts';
 
+
 const serverlessConfiguration: AWS = {
   service: 'authorization-service',
   frameworkVersion: '3',
@@ -13,8 +14,9 @@ const serverlessConfiguration: AWS = {
     name: 'aws',
     runtime: 'nodejs14.x',
     region: 'eu-west-1',
+    logRetentionInDays: 14,
     httpApi: {
-      cors: true
+      cors: true,    
     }, 
     apiGateway: {
       minimumCompressionSize: 1024,

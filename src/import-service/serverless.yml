@@ -11,6 +11,7 @@ custom:
     queueName: catalogItemsQueue
     topicName: createProductTopic
     dlqName: productDLQ
+    accountId: ${aws:accountId}
     dotenv:
         path: ./.env
     esbuild:
@@ -29,6 +30,17 @@ provider:
     stage: dev
     region: ${self:custom.region}
     lambdaHashingVersion: 20201221
+    httpApi:
+        authorizers:
+            basicAuthorizer:
+                name: basicAuthorizer
+                type: request
+                # functionName: basicAuthorizer
+                functionArn: arn:aws:lambda:${self:custom.region}:${self:custom.accountId}:function:basicAuthorizer
+                identitySource: method.request.header.Authorization
+                resultInSeconds: 300
+                
+   
 
     environment:
         SQS_QUEUE_URL:
@@ -60,6 +72,10 @@ provider:
               - 'sns:*'
           Resource:
               Ref: ProductTopic
+        
+        - Effect: 'Allow'
+          Action: ['lambda:invokeFunction']
+          Resource: arn:aws:lambda:${self:custom.region}:${self:custom.accountId}:function:basicAuthorizer
 
 resources:
     Resources:
@@ -92,6 +108,7 @@ resources:
                     title:
                         - knife
                         - dagger
+        
 
 functions:
     importProductsFile:
@@ -105,6 +122,13 @@ functions:
                       parameters:
                           querystrings:
                               name: true
+                          headers:
+                              Authorization: true
+                  authorizer:
+                     arn: arn:aws:lambda:${self:custom.region}:${self:custom.accountId}:function:basicAuthorizer
+                    #  resultInSeconds: 300
+                    #  identitySource: method.request.header.Authorization
+                    #  type: request
 
     importFileParser:
         handler: handler.importFileParser
