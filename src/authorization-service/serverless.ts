@@ -54,15 +54,15 @@ const serverlessConfiguration: AWS = {
                     },
                     ResponseParameters: {
                         'gatewayresponse.header.Access-Control-Allow-Origin':
-                            "'*'",
+                            '*',
                         'gatewayresponse.header.Access-Control-Allow-Headers':
-                            "'*'",
+                            '*',
                         'gatewayresponse.header.Access-Control-Allow-Methods':
-                            "'GET,OPTIONS'",
+                            'GET,OPTIONS',
                     },
                     ResponseType: 'DEFAULT_4XX',
                     ResponseTemplates: {
-                        'application/jso':
+                        'application/json':
                             '{"error":{"code":"custom-4XX-generic","message":$context.error.messageString},"requestId":"$context.requestId"}',
                     },
                 },
