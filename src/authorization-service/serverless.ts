@@ -54,11 +54,14 @@ const serverlessConfiguration: AWS = {
                     },
                     ResponseParameters: {
                         'gatewayresponse.header.Access-Control-Allow-Origin':
-                            '*',
+                            "'*'",
                         'gatewayresponse.header.Access-Control-Allow-Headers':
-                            '*',
+                            "'*'",
                         'gatewayresponse.header.Access-Control-Allow-Methods':
-                            'GET,OPTIONS',
+                            "'GET,OPTIONS'",
+                        // 'method.response.header.Content-Type': "'application/json'",
+                        // 'method.response.header.Access-Control-Allow-Origin': "'*'",
+                        // 'method.response.header.Access-Control-Allow-Credentials': "'true'"
                     },
                     ResponseType: 'DEFAULT_4XX',
                     ResponseTemplates: {
