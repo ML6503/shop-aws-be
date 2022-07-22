@@ -37,41 +37,8 @@ const serverlessConfiguration: AWS = {
             platform: 'node',
             concurrency: 10,
         },
-    },
-    resources: {
-        Resources: {
-            ApiGatewayRestApi: {
-                Type: 'AWS::ApiGateway::RestApi',
-                Properties: {
-                    Name: 'authorization-service-cyprushandmade-dev',
-                },
-            },
-            GatewayResponseDefault4XX: {
-                Type: 'AWS::ApiGateway::GatewayResponse',
-                Properties: {
-                    RestApiId: {
-                        Ref: 'ApiGatewayRestApi',
-                    },
-                    ResponseParameters: {
-                        'gatewayresponse.header.Access-Control-Allow-Origin':
-                            "'*'",
-                        'gatewayresponse.header.Access-Control-Allow-Headers':
-                            "'*'",
-                        'gatewayresponse.header.Access-Control-Allow-Methods':
-                            "'GET,OPTIONS'",
-                        // 'method.response.header.Content-Type': "'application/json'",
-                        // 'method.response.header.Access-Control-Allow-Origin': "'*'",
-                        // 'method.response.header.Access-Control-Allow-Credentials': "'true'"
-                    },
-                    ResponseType: 'DEFAULT_4XX',
-                    ResponseTemplates: {
-                        'application/json':
-                            '{"error":{"code":"custom-4XX-generic","message":$context.error.messageString},"requestId":"$context.requestId"}',
-                    },
-                },
-            },
-        },
-    },
+    }
+ 
 };
 
 module.exports = serverlessConfiguration;
