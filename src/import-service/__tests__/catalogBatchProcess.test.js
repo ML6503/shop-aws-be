@@ -18,19 +18,7 @@ describe('check catalogBatchProcess to publish', () => {
             'Dagger, Dagger damascus, 100, 10'
         );
         const classifiedRequestId = "90a903f5-a6fe-4073-8e62-2aa10c2e9fd0'";
-        // const event = {
-        //     Records: [
-        //         {
-        //             body: JSON.stringify({
-        //                 title: 'Dagger',
-        //                 description: 'Dagger damascus',
-        //                 price: '100',
-        //                 count: '10',
-        //                 classifiedRequestId,
-        //             }),
-        //         },
-        //     ],
-        // };
+       
         const event = eventStub;
         const result = handler(event);
         result.then((data) => expect(data).toMatchSnapshot());

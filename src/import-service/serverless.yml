@@ -11,6 +11,7 @@ custom:
     queueName: catalogItemsQueue
     topicName: createProductTopic
     dlqName: productDLQ
+    accountId: ${aws:accountId}
     dotenv:
         path: ./.env
     esbuild:
@@ -29,17 +30,23 @@ provider:
     stage: dev
     region: ${self:custom.region}
     lambdaHashingVersion: 20201221
+    httpApi:
+        authorizers:
+            basicAuthorizer:
+                name: basicAuthorizer
+                type: request
+                # functionName: basicAuthorizer
+                functionArn: arn:aws:lambda:${self:custom.region}:${self:custom.accountId}:function:basicAuthorizer
+                identitySource: method.request.header.Authorization
+                resultInSeconds: 300
+                
+   
 
     environment:
         SQS_QUEUE_URL:
             Ref: SQSQueue
         SNS_ARN:
             Ref: ProductTopic
-        # PG_HOST: process.env.PG_HOST
-        # PG_PORT: process.env.PG_PORT
-        # PG_DATABASE: process.env.PG_DATABASE
-        # PG_USERNAME: process.env.PG_USERNAME
-        # PG_PASSWORD: process.env.PG_PASSWORD
 
     iamRoleStatements:
         - Effect: 'Allow'
@@ -65,9 +72,23 @@ provider:
               - 'sns:*'
           Resource:
               Ref: ProductTopic
+        
+        - Effect: 'Allow'
+          Action: ['lambda:invokeFunction']
+          Resource: arn:aws:lambda:${self:custom.region}:${self:custom.accountId}:function:basicAuthorizer
 
 resources:
     Resources:
+        GatewayResponseDefault4XX:
+            Type: 'AWS::ApiGateway::GatewayResponse'
+            Properties:
+                ResponseParameters:
+                    gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+                    gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                    gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+                ResponseType: DEFAULT_4XX
+                RestApiId: dx6bexelkc
+
         SQSQueue:
             Type: AWS::SQS::Queue
             Properties:
@@ -97,6 +118,7 @@ resources:
                     title:
                         - knife
                         - dagger
+        
 
 functions:
     importProductsFile:
@@ -110,6 +132,13 @@ functions:
                       parameters:
                           querystrings:
                               name: true
+                          headers:
+                              Authorization: true
+                  authorizer:
+                     arn: arn:aws:lambda:${self:custom.region}:${self:custom.accountId}:function:basicAuthorizer
+                    #  resultInSeconds: 300
+                    #  identitySource: method.request.header.Authorization
+                    #  type: request
 
     importFileParser:
         handler: handler.importFileParser
