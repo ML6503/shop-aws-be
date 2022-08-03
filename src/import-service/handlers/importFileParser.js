@@ -16,7 +16,6 @@ const {
 } = require('../common/constants');
 
 const sqs = new AWS.SQS();
-// https://docs.aws.amazon.com/code-samples/latest/catalog/javascript-sqs-sqs_sendmessage.js.html
 
 const sendMessage = (fileData) => {
     sqs.sendMessage(
@@ -36,7 +35,6 @@ const sendMessage = (fileData) => {
 };
 
 module.exports.importFileParser = async (event, _context, callback) => {
-    // const s3 = new AWS.S3({ region: process.env.REGION });
     const client = new S3Client({ region: process.env.REGION });
 
     AWS.config.update({ region: process.env.REGION });

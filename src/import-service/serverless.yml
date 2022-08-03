@@ -39,8 +39,6 @@ provider:
                 functionArn: arn:aws:lambda:${self:custom.region}:${self:custom.accountId}:function:basicAuthorizer
                 identitySource: method.request.header.Authorization
                 resultInSeconds: 300
-                
-   
 
     environment:
         SQS_QUEUE_URL:
@@ -72,7 +70,7 @@ provider:
               - 'sns:*'
           Resource:
               Ref: ProductTopic
-        
+
         - Effect: 'Allow'
           Action: ['lambda:invokeFunction']
           Resource: arn:aws:lambda:${self:custom.region}:${self:custom.accountId}:function:basicAuthorizer
@@ -87,7 +85,7 @@ resources:
                     gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
                     gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
                 ResponseType: DEFAULT_4XX
-                RestApiId: dx6bexelkc
+                RestApiId: 90m4tsqga1
 
         SQSQueue:
             Type: AWS::SQS::Queue
@@ -118,7 +116,6 @@ resources:
                     title:
                         - knife
                         - dagger
-        
 
 functions:
     importProductsFile:
@@ -126,19 +123,19 @@ functions:
         events:
             - http:
                   method: get
-                  path: import
+                  path: 'import/'
                   cors: true
                   request:
                       parameters:
                           querystrings:
                               name: true
-                          headers:
-                              Authorization: true
+                          #   headers:
+                          #       Authorization: true
                   authorizer:
-                     arn: arn:aws:lambda:${self:custom.region}:${self:custom.accountId}:function:basicAuthorizer
-                    #  resultInSeconds: 300
-                    #  identitySource: method.request.header.Authorization
-                    #  type: request
+                      arn: arn:aws:lambda:${self:custom.region}:${self:custom.accountId}:function:basicAuthorizer
+                      resultTtlInSeconds: 0
+                      identitySource: method.request.header.Authorization
+                      type: token
 
     importFileParser:
         handler: handler.importFileParser
