@@ -10,7 +10,7 @@ module.exports.catalogBatchProcess = async (event) => {
     for (const record of event.Records) {
         try {
             // get new product from event and add to Data Base
-
+            console.log('DATA for DB in JSON: ', record.body);
             const addProductResponse = await axios.post(
                 'https://rxqgzhje6j.execute-api.eu-west-1.amazonaws.com/dev/products',
                 JSON.parse(record.body),
