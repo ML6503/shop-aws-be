@@ -12,20 +12,24 @@ Depending on your preferred package manager, follow the instructions below to de
 
 ### Using NPM
 
-- Run `npm i` to install the project dependencies
-- Run `npx sls deploy` to deploy this stack to AWS
+-   Run `npm i` to install the project dependencies
+-   Run `npx sls deploy` to deploy this stack to AWS
 
 ### Using Yarn
 
-- Run `yarn` to install the project dependencies
-- Run `yarn sls deploy` to deploy this stack to AWS
+-   Run `yarn` to install the project dependencies
+-   Run `yarn sls deploy` to deploy this stack to AWS
 
 ## Endpoints:
 
-  GET - https://rxqgzhje6j.execute-api.eu-west-1.amazonaws.com/dev/products
-  GET - https://rxqgzhje6j.execute-api.eu-west-1.amazonaws.com/dev/products/{productId}
-  POST - https://rxqgzhje6j.execute-api.eu-west-1.amazonaws.com/dev/products
-  GET - https://3j7j93dktk.execute-api.eu-west-1.amazonaws.com/swagger
+GET - https://rxqgzhje6j.execute-api.eu-west-1.amazonaws.com/dev/products
+GET - https://rxqgzhje6j.execute-api.eu-west-1.amazonaws.com/dev/products/{productId}
+POST - https://rxqgzhje6j.execute-api.eu-west-1.amazonaws.com/dev/products
+GET - https://3j7j93dktk.execute-api.eu-west-1.amazonaws.com/swagger
+
+# Cart:
+
+https://8k5p7io0i0.execute-api.eu-west-1.amazonaws.com
 
 ## Cloudfront FE shop URL
 
@@ -35,8 +39,8 @@ https://d3kdjtzujfvruo.cloudfront.net/
 
 In order to test the hello function locally, run the following command:
 
-- `npx sls invoke local -f hello --path src/functions/hello/mock.json` if you're using NPM
-- `yarn sls invoke local -f hello --path src/functions/hello/mock.json` if you're using Yarn
+-   `npx sls invoke local -f hello --path src/functions/hello/mock.json` if you're using NPM
+-   `yarn sls invoke local -f hello --path src/functions/hello/mock.json` if you're using Yarn
 
 Check the [sls invoke local command documentation](https://www.serverless.com/framework/docs/providers/aws/cli-reference/invoke-local/) for more information.
 
@@ -58,8 +62,8 @@ curl --location --request POST 'https://myApiEndpoint/dev/hello' \
 
 The project code base is mainly located within the `src` folder. This folder is divided in:
 
-- `functions` - containing code base and configuration for your lambda functions
-- `libs` - containing shared code base between your lambdas
+-   `functions` - containing code base and configuration for your lambda functions
+-   `libs` - containing shared code base between your lambdas
 
 ```
 .
@@ -87,9 +91,9 @@ The project code base is mainly located within the `src` folder. This folder is 
 
 ### 3rd party libraries
 
-- [json-schema-to-ts](https://github.com/ThomasAribart/json-schema-to-ts) - uses JSON-Schema definitions used by API Gateway for HTTP request validation to statically generate TypeScript types in your lambda's handler code base
-- [middy](https://github.com/middyjs/middy) - middleware engine for Node.Js lambda. This template uses [http-json-body-parser](https://github.com/middyjs/middy/tree/master/packages/http-json-body-parser) to convert API Gateway `event.body` property, originally passed as a stringified JSON, to its corresponding parsed object
-- [@serverless/typescript](https://github.com/serverless/typescript) - provides up-to-date TypeScript definitions for your `serverless.ts` service file
+-   [json-schema-to-ts](https://github.com/ThomasAribart/json-schema-to-ts) - uses JSON-Schema definitions used by API Gateway for HTTP request validation to statically generate TypeScript types in your lambda's handler code base
+-   [middy](https://github.com/middyjs/middy) - middleware engine for Node.Js lambda. This template uses [http-json-body-parser](https://github.com/middyjs/middy/tree/master/packages/http-json-body-parser) to convert API Gateway `event.body` property, originally passed as a stringified JSON, to its corresponding parsed object
+-   [@serverless/typescript](https://github.com/serverless/typescript) - provides up-to-date TypeScript definitions for your `serverless.ts` service file
 
 ### Advanced usage
 

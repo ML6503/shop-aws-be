@@ -41,6 +41,7 @@ export default class ProductService {
             "id" uuid not null DEFAULT uuid_generate_v4 () PRIMARY KEY,
             "title" text not null UNIQUE,
             "description" text,
+            "image" text,
             "price" integer
             )`;
 

@@ -10,64 +10,44 @@ const port = process.env.PORT || 3001;
 
 app.use(express.json());
 
-app.all(
-    '/*',
-    (req: Request, res: Response) => {
-        console.log('URL', req.url);
+app.all('/*', (req: Request, res: Response) => {
+    const method = req.method;
 
-        console.log('ORIGINAL URL', req.originalUrl);
+    const body =
+        Object.keys(req.body).length === 0 || req.body === undefined
+            ? null
+            : { data: req.body };
 
-        console.log('QUERY:', req.query);
+    const recipientName = req.originalUrl.split('/')[1];
 
-        console.log('METHOD:', req.method);
+    const recipientURL = process.env[recipientName];
 
-        console.log('BODY : ', req.body);
+    if (recipientURL) {
+        axios({
+            method: method,
+            url: `${recipientURL}${req.originalUrl}`,
+            ...body,
+        })
+            .then(({ data }) => {
+                console.log('Resp to BFF:', data);
 
-        const method = req.method;
-
-        const body =
-            Object.keys(req.body).length === 0 ? null : { data: req.body };
-
-        const recipientName = req.originalUrl.split('/')[1];
-
-        console.log('recipientName', recipientName);
-
-        const recipientURL = process.env[recipientName];
-
-        if (recipientURL) {
-            console.log('recipientURL', recipientURL);
-
-            axios({
-                method: method,
-                url: recipientURL,
-                ...body,
+                res.status(OK).json(data);
             })
-                .then(({ data }) => {
-                    console.log('Resp to BFF:', data);
-
-                    res.status(OK).json(data);
-                })
-                .catch((error) => {
-                    console.error('BFF Error:', JSON.stringify(error));
-                    if (error) {
-                        const { status, data } = error.response;
-                        res.status(status).json(data);
-                    } else {
-                        res.status(INTERNAL_SERVER_ERROR).json({
-                            error: error.message,
-                        });
-                    }
-                });
-        } else {
-            res.status(BAD_GATEWAY).json({ error: 'Cannot process request' });
-        }
-
-        // next();
+            .catch((error) => {
+                console.error('BFF Error:', JSON.stringify(error));
+                if (error) {
+                    const { status, data } = error.response;
+                    res.status(status).json(data);
+                } else {
+                    res.status(INTERNAL_SERVER_ERROR).json({
+                        error: error.message,
+                    });
+                }
+            });
+    } else {
+        res.status(BAD_GATEWAY).json({ error: 'Cannot process request' });
     }
-    // (req: Request, res: Response) => {
-    //     res.send('Express app ts');
-    // }
-);
+});
 
 app.listen(port, () =>
     console.log(`Server is running at http://localhost:${port}`)
