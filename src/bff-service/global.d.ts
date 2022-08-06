@@ -1,7 +1,8 @@
-namespace NodeJS {
+declare namespace NodeJS {
     interface ProcessEnv {
+        NODE_ENV: string;
         PORT: string;
-        product: string;
-        cart: string;
+        products: string;
+        profile: string;
     }
 }

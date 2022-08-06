@@ -21,6 +21,9 @@ app.all('/*', (req: Request, res: Response) => {
     const recipientName = req.originalUrl.split('/')[1];
 
     const recipientURL = process.env[recipientName];
+    console.log('recipient name: ', recipientName);
+    console.log('original URL names: ', req.originalUrl.split('/'));
+    console.log('recipient URL: ', recipientURL);
 
     if (recipientURL) {
         axios({
@@ -49,6 +52,6 @@ app.all('/*', (req: Request, res: Response) => {
     }
 });
 
-app.listen(port, () =>
+app.listen(+port, () =>
     console.log(`Server is running at http://localhost:${port}`)
 );
