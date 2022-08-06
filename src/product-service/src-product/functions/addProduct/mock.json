@@ -1,11 +1,12 @@
 {
-  "headers": {
-    "Content-Type": "application/json"
-  },
-  "body": {
-    "title": "Custom  knife",
-    "description": "Steel custom made knife according to your design",
-    "price": 100,
-    "count": 1
-  }
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "body": {
+        "title": "Custom  knife",
+        "description": "Steel custom made knife according to your design",
+        "image": "",
+        "price": 100,
+        "count": 1
+    }
 }
