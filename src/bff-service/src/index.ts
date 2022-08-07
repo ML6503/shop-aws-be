@@ -26,13 +26,9 @@ app.all('/*', (req: Request, res: Response) => {
     const recipientName = req.originalUrl.split('/')[1];
 
     const recipientURL = process.env[recipientName];
-    console.log('recipient name: ', recipientName);
-    console.log('original URL names: ', req.originalUrl.split('/'));
-    console.log('recipient URL: ', recipientURL);
 
     if (recipientURL) {
         if (shopCache.has('products')) {
-            console.log('Getting products from CACHE');
             res.status(OK).json(shopCache.get('products'));
         } else {
             axios({
@@ -41,9 +37,8 @@ app.all('/*', (req: Request, res: Response) => {
                 ...body,
             })
                 .then(({ data }) => {
-                    console.log('Resp to BFF:', data);
                     shopCache.set('products', data);
-                    console.log('Getting products from API');
+
                     res.status(OK).json(data);
                 })
                 .catch((error) => {
