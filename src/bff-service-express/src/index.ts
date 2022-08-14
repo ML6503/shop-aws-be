@@ -37,7 +37,8 @@ app.all('/*', (req: Request, res: Response) => {
                 ...body,
             })
                 .then(({ data }) => {
-                    shopCache.set('products', data);
+                    recipientName === 'products' &&
+                        shopCache.set('products', data);
 
                     res.status(OK).json(data);
                 })
