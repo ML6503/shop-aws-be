@@ -4,7 +4,7 @@
   "info": {
     "title": "shop-service",
     "version": "1"
-  },  
+  },
   "paths": {
     "/products": {
       "get": {
@@ -90,97 +90,6 @@
       }
     }
   },
-  "definitions": {
-    "IProduct": {
-      "properties": {
-        "id": {
-          "title": "IProduct.id",
-          "type": "string"
-        },
-        "title": {
-          "title": "IProduct.title",
-          "type": "string"
-        },
-        "description": {
-          "title": "IProduct.description",
-          "type": "string"
-        },
-        "price": {
-          "title": "IProduct.price",
-          "type": "number"
-        }
-      },
-      "required": [
-        "id",
-        "title",
-        "description",
-        "price"
-      ],
-      "additionalProperties": false,
-      "title": "IProduct",
-      "type": "object"
-    },
-    "IProductWzStock": {
-      "properties": {
-        "count": {
-          "title": "IProductWzStock.count",
-          "type": "number"
-        }
-      },
-      "required": [
-        "count"
-      ],
-      "additionalProperties": false,
-      "title": "IProductWzStock",
-      "type": "object"
-    },
-    "INewProduct": {
-      "properties": {
-        "title": {
-          "title": "INewProduct.title",
-          "type": "string"
-        },
-        "description": {
-          "title": "INewProduct.description",
-          "type": "string"
-        },
-        "price": {
-          "title": "INewProduct.price",
-          "type": "number"
-        },
-        "count": {
-          "title": "INewProduct.count",
-          "type": "number"
-        }
-      },
-      "required": [
-        "title",
-        "description",
-        "price",
-        "count"
-      ],
-      "additionalProperties": false,
-      "title": "INewProduct",
-      "type": "object"
-    },
-    "IProducts": {
-      "properties": {
-        "products": {
-          "items": {
-            "$ref": "#/definitions/IProduct",
-            "title": "IProducts.products.[]"
-          },
-          "title": "IProducts.products",
-          "type": "array"
-        }
-      },
-      "required": [
-        "products"
-      ],
-      "additionalProperties": false,
-      "title": "IProducts",
-      "type": "object"
-    }
-  },
+  "definitions": {},
   "securityDefinitions": {}
 };
